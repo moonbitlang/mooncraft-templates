@@ -1,0 +1,7 @@
+import {
+  "mooncraft/minimal_static_app" @app,
+}
+
+options(
+  "is-main": true,
+)

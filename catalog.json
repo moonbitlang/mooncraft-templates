@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "templates": [
+    {
+      "id": "minimal-static-app",
+      "name": "Minimal Static App",
+      "path": "templates/minimal-static-app",
+      "description": "A small MoonBit project that renders a static HTML preview.",
+      "runtime": {
+        "previewScript": "mooncraft-preview.sh",
+        "defaultPort": 4300,
+        "host": "0.0.0.0"
+      },
+      "validation": [
+        "moon fmt --check",
+        "moon check",
+        "moon build",
+        "moon test",
+        "preview smoke"
+      ]
+    }
+  ]
+}
