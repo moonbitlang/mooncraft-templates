@@ -1,0 +1,18 @@
+import {
+  "mooncraft/wasm_mandelbrot_app/shared" @shared,
+}
+
+supported_targets = "wasm"
+
+options(
+  link: {
+    "wasm": {
+      "exports": [
+        "default_width",
+        "default_height",
+        "default_max_iter",
+        "mandelbrot_color",
+      ],
+    },
+  },
+)

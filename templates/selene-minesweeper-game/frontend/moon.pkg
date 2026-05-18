@@ -1,0 +1,33 @@
+import {
+  "Milky2018/selene/app",
+  "Milky2018/selene/ecs",
+  "Milky2018/selene/entity",
+  "Milky2018/selene/inputs",
+  "Milky2018/selene/plugins",
+  "Milky2018/selene/math" @math,
+  "Milky2018/selene/render",
+  "Milky2018/selene/sprite",
+  "Milky2018/selene/system",
+  "Milky2018/selene/text2d",
+  "Milky2018/selene/time",
+  "Milky2018/selene/transform",
+  "Milky2018/selene/ui",
+  "Milky2018/selene/visibility",
+  "moonbitlang/core/math" @cmath,
+  "moonbitlang/core/random",
+  "moonbitlang/core/bytes",
+  "mooncraft/selene_minesweeper_game/frontend/host" @host,
+}
+
+supported_targets = "js"
+
+options(
+  "is-main": true,
+  overrides: [
+    "Milky2018/selene_webgpu/platform_audio",
+    "Milky2018/selene_webgpu/platform_window",
+    "Milky2018/selene_webgpu/platform_asset_io",
+    "Milky2018/selene_webgpu/platform_render",
+    "Milky2018/selene_webgpu/platform_input",
+  ],
+)

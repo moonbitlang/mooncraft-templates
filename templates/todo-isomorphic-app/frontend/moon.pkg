@@ -1,0 +1,9 @@
+import {
+  "mooncraft/todo_isomorphic_app/shared" @shared,
+}
+
+supported_targets = "js"
+
+options(
+  "is-main": true,
+)

@@ -10,3 +10,7 @@
 - Serve the user-facing app at `/`.
 - Serve `/api/health` when practical. MoonCraft can fall back to `/` for simple
   static previews.
+- Full-stack app templates should use `frontend/shared/backend` when both
+  browser and server code need the same MoonBit model.
+- Selene game templates do not need `shared/` unless the backend also consumes
+  game-domain types. Keep the backend as a small static HTTP server.

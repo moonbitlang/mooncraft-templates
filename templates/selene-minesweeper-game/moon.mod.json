@@ -1,0 +1,20 @@
+{
+  "name": "mooncraft/selene_minesweeper_game",
+  "version": "0.1.0",
+  "deps": {
+    "moonbitlang/async": "0.18.1",
+    "Milky2018/selene": "0.33.2",
+    "Milky2018/selene_webgpu": "0.33.2",
+    "Milky2018/moon_accesskit": "0.2.2"
+  },
+  "readme": "README.md",
+  "repository": "",
+  "license": "Apache-2.0",
+  "keywords": [
+    "mooncraft",
+    "selene",
+    "game"
+  ],
+  "description": "Selene WebGPU Minesweeper template for MoonCraft.",
+  "preferred-target": "native"
+}

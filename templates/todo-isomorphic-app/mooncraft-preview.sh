@@ -1,0 +1,46 @@
+#!/bin/sh
+set -eu
+
+port="${1:-4300}"
+
+case "$port" in
+  ""|*[!0-9]*)
+    echo "port must be numeric" >&2
+    exit 2
+    ;;
+esac
+
+cd "$(dirname "$0")"
+rm -rf preview-dist
+mkdir -p preview-dist
+
+moon build --target js frontend
+cp _build/js/debug/build/frontend/frontend.js preview-dist/frontend.js
+
+cat > preview-dist/index.html <<'HTML'
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MoonCraft Todo</title>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #f7f7f4; color: #172026; }
+    main { max-width: 720px; margin: 0 auto; padding: 48px 20px; }
+    h1 { margin: 0 0 20px; font-size: 32px; }
+    form { display: flex; gap: 8px; margin-bottom: 20px; }
+    input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid #c9d1d5; border-radius: 6px; font: inherit; }
+    button { padding: 9px 12px; border: 1px solid #172026; border-radius: 6px; background: #172026; color: white; font: inherit; cursor: pointer; }
+    li { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-top: 1px solid #dfe5e8; }
+    li span { flex: 1; }
+    li.done span { color: #69777f; text-decoration: line-through; }
+  </style>
+</head>
+<body>
+  <main id="app"></main>
+  <script type="module" src="/frontend.js"></script>
+</body>
+</html>
+HTML
+
+exec moon run --target native backend -- preview-dist "$port"

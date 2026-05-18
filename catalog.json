@@ -18,6 +18,63 @@
         "moon test",
         "preview smoke"
       ]
+    },
+    {
+      "id": "todo-isomorphic-app",
+      "name": "Todo Isomorphic App",
+      "path": "templates/todo-isomorphic-app",
+      "description": "A frontend/shared/backend Todo app following MoonBit multi-target structure.",
+      "runtime": {
+        "previewScript": "mooncraft-preview.sh",
+        "defaultPort": 4300,
+        "host": "0.0.0.0"
+      },
+      "validation": [
+        "moon fmt --check",
+        "moon check",
+        "moon build",
+        "moon test",
+        "moon build --target js frontend",
+        "preview smoke"
+      ]
+    },
+    {
+      "id": "wasm-mandelbrot-app",
+      "name": "Wasm Mandelbrot App",
+      "path": "templates/wasm-mandelbrot-app",
+      "description": "A frontend/shared/backend app with a WebAssembly Mandelbrot compute frontend.",
+      "runtime": {
+        "previewScript": "mooncraft-preview.sh",
+        "defaultPort": 4300,
+        "host": "0.0.0.0"
+      },
+      "validation": [
+        "moon fmt --check",
+        "moon check",
+        "moon build",
+        "moon test",
+        "moon build --target wasm frontend",
+        "preview smoke"
+      ]
+    },
+    {
+      "id": "selene-minesweeper-game",
+      "name": "Selene Minesweeper Game",
+      "path": "templates/selene-minesweeper-game",
+      "description": "A Selene WebGPU Minesweeper game with a tiny native async/http preview server.",
+      "runtime": {
+        "previewScript": "mooncraft-preview.sh",
+        "defaultPort": 4300,
+        "host": "0.0.0.0"
+      },
+      "validation": [
+        "moon fmt --check",
+        "moon check",
+        "moon build",
+        "moon test",
+        "moon build --target js frontend",
+        "preview smoke"
+      ]
     }
   ]
 }

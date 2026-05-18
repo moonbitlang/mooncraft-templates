@@ -43,6 +43,14 @@ for template_dir in "$root_dir"/templates/*; do
     moon check
     moon build
     moon test
+    if [ -d frontend ]; then
+      if grep -q 'supported_targets = "js"' frontend/moon.pkg; then
+        moon build --target js frontend
+      fi
+      if grep -q 'supported_targets = "wasm"' frontend/moon.pkg; then
+        moon build --target wasm frontend
+      fi
+    fi
   )
 
   port=$(python3 - <<'PY'
