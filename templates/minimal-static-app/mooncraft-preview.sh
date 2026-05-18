@@ -16,4 +16,4 @@ mkdir -p preview-dist/api
 moon run cmd/main > preview-dist/index.html
 printf '{"status":"ok"}\n' > preview-dist/api/health
 
-exec python3 -m http.server "$port" --bind 0.0.0.0 --directory preview-dist
+exec moon run --target native backend -- preview-dist "$port"

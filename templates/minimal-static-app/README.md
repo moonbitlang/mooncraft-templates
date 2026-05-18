@@ -4,7 +4,7 @@ This template is the smallest useful MoonCraft preview shape:
 
 - MoonBit renders the HTML page.
 - `mooncraft-preview.sh` writes the page into `preview-dist/`.
-- Python's foreground HTTP server serves the preview on the requested port.
+- `backend/` serves the preview with a native MoonBit HTTP server.
 
 Run validation:
 
