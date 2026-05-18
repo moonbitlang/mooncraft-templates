@@ -4,8 +4,8 @@ fn ensure_cell_entities_created() -> Unit {
     return
   }
   for _ in 0..<MAX_CELL_COUNT {
-    cell_background_entities.push(@entity.Entity::new())
-    cell_text_entities.push(@entity.Entity::new())
+    cell_background_entities.push(@entity.Entity::Entity())
+    cell_text_entities.push(@entity.Entity::Entity())
   }
 }
 

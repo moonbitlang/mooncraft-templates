@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "deps": {
     "moonbitlang/async": "0.18.1",
-    "Milky2018/selene": "0.33.2",
-    "Milky2018/selene_webgpu": "0.33.2",
-    "Milky2018/moon_accesskit": "0.2.2"
+    "Milky2018/selene": "0.34.0",
+    "Milky2018/selene_webgpu": "0.34.0"
   },
   "readme": "README.md",
   "repository": "",

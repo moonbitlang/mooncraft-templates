@@ -159,69 +159,69 @@ let game_state : GameState = {
 let board : Array[CellData] = []
 
 ///|
-let background_entity : @entity.Entity = @entity.Entity::new()
+let background_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let header_entity : @entity.Entity = @entity.Entity::new()
+let header_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let title_entity : @entity.Entity = @entity.Entity::new()
+let title_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let footer_entity : @entity.Entity = @entity.Entity::new()
+let footer_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let mine_panel_entity : @entity.Entity = @entity.Entity::new()
+let mine_panel_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let mine_text_entity : @entity.Entity = @entity.Entity::new()
+let mine_text_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let timer_panel_entity : @entity.Entity = @entity.Entity::new()
+let timer_panel_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let timer_text_entity : @entity.Entity = @entity.Entity::new()
+let timer_text_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let face_panel_entity : @entity.Entity = @entity.Entity::new()
+let face_panel_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let face_text_entity : @entity.Entity = @entity.Entity::new()
+let face_text_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let board_panel_entity : @entity.Entity = @entity.Entity::new()
+let board_panel_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let overlay_panel_entity : @entity.Entity = @entity.Entity::new()
+let overlay_panel_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let overlay_text_entity : @entity.Entity = @entity.Entity::new()
+let overlay_text_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
 let difficulty_panel_entities : Array[@entity.Entity] = [
-  @entity.Entity::new(),
-  @entity.Entity::new(),
-  @entity.Entity::new(),
+  @entity.Entity::Entity(),
+  @entity.Entity::Entity(),
+  @entity.Entity::Entity(),
 ]
 
 ///|
 let difficulty_text_entities : Array[@entity.Entity] = [
-  @entity.Entity::new(),
-  @entity.Entity::new(),
-  @entity.Entity::new(),
+  @entity.Entity::Entity(),
+  @entity.Entity::Entity(),
+  @entity.Entity::Entity(),
 ]
 
 ///|
-let hover_frame_top_entity : @entity.Entity = @entity.Entity::new()
+let hover_frame_top_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let hover_frame_bottom_entity : @entity.Entity = @entity.Entity::new()
+let hover_frame_bottom_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let hover_frame_left_entity : @entity.Entity = @entity.Entity::new()
+let hover_frame_left_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let hover_frame_right_entity : @entity.Entity = @entity.Entity::new()
+let hover_frame_right_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
 let cell_background_entities : Array[@entity.Entity] = []
