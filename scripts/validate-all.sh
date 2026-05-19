@@ -48,6 +48,9 @@ for template_dir in "$root_dir"/templates/*; do
         moon build --target js frontend
       fi
       if grep -q 'supported_targets = "wasm"' frontend/moon.pkg; then
+        if find frontend \( -name '*_test.mbt' -o -name '*_wbtest.mbt' \) | grep -q .; then
+          moon test --target wasm frontend
+        fi
         moon build --target wasm frontend
       fi
     fi

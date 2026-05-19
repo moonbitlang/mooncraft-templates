@@ -1,7 +1,3 @@
-import {
-  "mooncraft/wasm_mandelbrot_app/shared" @shared,
-}
-
 supported_targets = "wasm"
 
 options(

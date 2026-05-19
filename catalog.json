@@ -42,7 +42,7 @@
       "id": "wasm-mandelbrot-app",
       "name": "Wasm Mandelbrot App",
       "path": "templates/wasm-mandelbrot-app",
-      "description": "A frontend/shared/backend app with a WebAssembly Mandelbrot compute frontend.",
+      "description": "A frontend/backend app with a WebAssembly Mandelbrot compute frontend.",
       "runtime": {
         "previewScript": "mooncraft-preview.sh",
         "defaultPort": 4300,
@@ -53,6 +53,7 @@
         "moon check",
         "moon build",
         "moon test",
+        "moon test --target wasm frontend",
         "moon build --target wasm frontend",
         "preview smoke"
       ]

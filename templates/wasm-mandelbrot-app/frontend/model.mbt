@@ -6,7 +6,7 @@ pub(all) struct RenderParams {
   center_x : Double
   center_y : Double
   scale : Double
-} derive(Debug, Eq, ToJson, @json.FromJson)
+} derive(Debug, Eq)
 
 ///|
 pub fn default_params() -> RenderParams {
