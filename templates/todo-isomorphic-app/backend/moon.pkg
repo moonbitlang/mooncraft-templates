@@ -2,12 +2,10 @@ import {
   "mooncraft/todo_isomorphic_app/shared" @shared,
   "moonbitlang/async",
   "moonbitlang/async/fs",
-  "moonbitlang/async/http",
-  "moonbitlang/async/io",
-  "moonbitlang/async/socket",
   "moonbitlang/core/env",
   "moonbitlang/core/json",
   "moonbitlang/core/string",
+  "oboard/mocket",
 }
 
 supported_targets = "native"
