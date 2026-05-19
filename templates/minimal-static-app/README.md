@@ -3,8 +3,8 @@
 This template is the smallest useful MoonCraft preview shape:
 
 - MoonBit renders the HTML page.
-- `mooncraft-preview.sh` writes the page into `preview-dist/`.
-- `backend/` serves the preview with a native MoonBit HTTP server.
+- `backend/` serves the page directly with a native MoonBit HTTP server.
+- `mooncraft-preview.sh` starts the server on the requested port.
 
 Run validation:
 

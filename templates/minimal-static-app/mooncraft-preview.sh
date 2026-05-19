@@ -11,9 +11,5 @@ case "$port" in
 esac
 
 cd "$(dirname "$0")"
-mkdir -p preview-dist/api
 
-moon run cmd/main > preview-dist/index.html
-printf '{"status":"ok"}\n' > preview-dist/api/health
-
-exec moon run --target native backend -- preview-dist "$port"
+exec moon run --target native backend -- "$port"
