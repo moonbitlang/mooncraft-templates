@@ -123,6 +123,7 @@ async fn serve(dist_dir : String, port : Int) -> Unit {
   ..get("/frontend.js", _ => {
     asset_response(dist_dir + "/frontend.js", "text/javascript; charset=utf-8")
   })
+  ..get("/favicon.ico", _ => @mocket.HttpResponse::new(NoContent))
   ..get("/api/health", _ => json_response(OK, "{\"ok\":true}"))
   ..get("/api/todos", _ => json_response(OK, @shared.todos_response_json(todos)))
   ..post("/api/todos", event => create_todo(event))
