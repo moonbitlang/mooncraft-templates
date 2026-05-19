@@ -8,28 +8,76 @@ if [ ! -f "$root_dir/catalog.json" ]; then
   exit 1
 fi
 
-python3 - "$root_dir/catalog.json" <<'PY'
+template_list=$(mktemp)
+
+cleanup_catalog() {
+  rm -f "$template_list"
+}
+
+trap cleanup_catalog EXIT INT TERM
+
+python3 - "$root_dir" "$template_list" <<'PY'
 import json
+from pathlib import Path
 import sys
 
-with open(sys.argv[1], "r", encoding="utf-8") as handle:
+root = Path(sys.argv[1])
+output_path = Path(sys.argv[2])
+catalog_path = root / "catalog.json"
+templates_root = root / "templates"
+
+with catalog_path.open("r", encoding="utf-8") as handle:
     catalog = json.load(handle)
 
-if not isinstance(catalog.get("templates"), list):
+templates = catalog.get("templates")
+if not isinstance(templates, list) or not templates:
     raise SystemExit("catalog.json must contain a templates array")
 
-for template in catalog["templates"]:
+seen_ids = set()
+seen_paths = set()
+catalog_paths = []
+
+for template in templates:
     for key in ("id", "path", "description"):
         if not template.get(key):
             raise SystemExit(f"catalog template is missing {key}")
+    template_id = template["id"]
+    if template_id in seen_ids:
+        raise SystemExit(f"duplicate catalog template id: {template_id}")
+    seen_ids.add(template_id)
+
+    raw_path = template["path"]
+    path = Path(raw_path)
+    if path.is_absolute() or ".." in path.parts:
+        raise SystemExit(f"catalog template path must stay inside repo: {raw_path}")
+    if path in seen_paths:
+        raise SystemExit(f"duplicate catalog template path: {raw_path}")
+    seen_paths.add(path)
+    catalog_paths.append(path)
+
+catalog_set = {str(path) for path in catalog_paths}
+actual_set = {
+    str(path.relative_to(root))
+    for path in templates_root.iterdir()
+    if path.is_dir() and (path / "moon.mod.json").is_file()
+}
+
+missing = sorted(catalog_set - actual_set)
+extra = sorted(actual_set - catalog_set)
+if missing:
+    raise SystemExit("catalog references missing templates: " + ", ".join(missing))
+if extra:
+    raise SystemExit("templates missing from catalog.json: " + ", ".join(extra))
+
+with output_path.open("w", encoding="utf-8") as output:
+    for path in catalog_paths:
+        template_dir = root / path
+        if not (template_dir / "mooncraft-preview.sh").is_file():
+            raise SystemExit(f"missing mooncraft-preview.sh in {path}")
+        print(template_dir, file=output)
 PY
 
-found=0
-for template_dir in "$root_dir"/templates/*; do
-  [ -d "$template_dir" ] || continue
-  [ -f "$template_dir/moon.mod.json" ] || continue
-  found=1
-
+while IFS= read -r template_dir; do
   echo "==> $(basename "$template_dir")"
 
   if [ ! -x "$template_dir/mooncraft-preview.sh" ]; then
@@ -102,11 +150,6 @@ PY
   fi
 
   cleanup_preview
-done
-
-if [ "$found" -ne 1 ]; then
-  echo "no templates found" >&2
-  exit 1
-fi
+done < "$template_list"
 
 echo "all templates validated"
