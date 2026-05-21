@@ -101,6 +101,69 @@
       }
     },
     {
+      "id": "interactive-presentation-app",
+      "name": "Interactive Presentation",
+      "path": "templates/interactive-presentation-app",
+      "description": "A full-stack MoonBit presentation app for code-powered decks, live metrics, and interactive slide components. The Rabbita JavaScript frontend and Mocket native backend share deck DTOs, JSON derivations, validation, and navigation rules through the shared package.",
+      "category": "fullstack",
+      "useCases": [
+        "web",
+        "presentations",
+        "visualization",
+        "interactive",
+        "fullstack",
+        "isomorphic"
+      ],
+      "architecture": {
+        "shape": "frontend/shared/backend",
+        "frontend": {
+          "target": "js",
+          "framework": "rabbita"
+        },
+        "shared": {
+          "purpose": "Deck DTOs, JSON derivation, validation, navigation, and progress rules"
+        },
+        "backend": {
+          "target": "native",
+          "framework": "mocket"
+        }
+      },
+      "runtime": {
+        "previewScript": "mooncraft-preview.sh",
+        "defaultPort": 4300,
+        "host": "0.0.0.0",
+        "serves": [
+          "/",
+          "/api/health",
+          "/api/deck",
+          "/api/metrics",
+          "/frontend.js"
+        ],
+        "artifacts": [
+          "preview-dist/index.html",
+          "preview-dist/frontend.js"
+        ]
+      },
+      "validation": {
+        "commands": [
+          "moon fmt --check",
+          "moon check",
+          "moon build",
+          "moon test",
+          "moon build --target js frontend"
+        ],
+        "previewSmoke": {
+          "paths": [
+            "/",
+            "/api/health",
+            "/api/deck",
+            "/api/metrics",
+            "/frontend.js"
+          ]
+        }
+      }
+    },
+    {
       "id": "wasm-mandelbrot-app",
       "name": "Wasm Mandelbrot App",
       "path": "templates/wasm-mandelbrot-app",

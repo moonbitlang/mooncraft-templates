@@ -1,0 +1,15 @@
+import {
+  "moonbit-community/rabbita",
+  "moonbit-community/rabbita/common" @common,
+  "moonbit-community/rabbita/html",
+  "moonbit-community/rabbita/http",
+  "moonbit-community/rabbita/sub",
+  "moonbitlang/core/string",
+  "mooncraft/interactive_presentation_app/shared" @shared,
+}
+
+supported_targets = "js"
+
+options(
+  "is-main": true,
+)

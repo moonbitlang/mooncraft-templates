@@ -33,6 +33,8 @@ similar app shape.
 - `minimal-static-app`: native-only static preview.
 - `todo-isomorphic-app`: `frontend/shared/backend` Todo app based on MoonBit's
   multi-target architecture.
+- `interactive-presentation-app`: `frontend/shared/backend` presentation app
+  with interactive slides and backend-fed metrics.
 - `wasm-mandelbrot-app`: `frontend/backend` app with Wasm frontend compute.
 - `selene-minesweeper-game`: Selene WebGPU game with `frontend/backend` only.
 

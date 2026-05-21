@@ -1,0 +1,15 @@
+import {
+  "mooncraft/interactive_presentation_app/shared" @shared,
+  "moonbitlang/async",
+  "moonbitlang/async/fs",
+  "moonbitlang/core/env",
+  "moonbitlang/core/json",
+  "moonbitlang/core/string",
+  "oboard/mocket",
+}
+
+supported_targets = "native"
+
+options(
+  "is-main": true,
+)
