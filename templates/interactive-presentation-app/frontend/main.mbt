@@ -786,7 +786,7 @@ fn view_quote_slide(slide : @shared.Slide) -> Html {
 }
 
 ///|
-fn view_object_slide(slide : @shared.Slide) -> Html {
+fn view_object_slide(slide : @shared.Slide, preview? : Bool = false) -> Html {
   let attrs = @html.Attrs::build()
     .class("moonbit-object-viewer")
     .data_set("word", "MoonBit")
@@ -796,7 +796,11 @@ fn view_object_slide(slide : @shared.Slide) -> Html {
       h2(slide.title),
       p(class="body-copy", slide.body),
     ]),
-    node("mooncraft-word-viewer", attrs, nothing),
+    if preview {
+      div(class="object-preview-word", "MoonBit")
+    } else {
+      node("mooncraft-word-viewer", attrs, nothing)
+    },
   ])
 }
 
@@ -814,6 +818,7 @@ fn view_slide(
   emit : @rabbita.Emit[Msg],
   model : Model,
   slide : @shared.Slide,
+  preview? : Bool = false,
 ) -> Html {
   match slide.kind {
     "title" => view_title_slide(slide)
@@ -824,7 +829,7 @@ fn view_slide(
     "comparison" => view_comparison_slide(slide)
     "components" => view_components_slide(slide)
     "quote" => view_quote_slide(slide)
-    "object3d" => view_object_slide(slide)
+    "object3d" => view_object_slide(slide, preview~)
     _ => view_closing_slide(slide)
   }
 }
@@ -842,8 +847,12 @@ fn view_thumbnail(
     on_click=emit(GoTo(index)),
     [
       span(class="thumb-number", "\{index + 1}"),
-      strong(slide.title),
-      small(slide.eyebrow),
+      div(class="thumb-preview", [
+        div(class="thumb-stage", [
+          view_slide(emit, initial_model(), slide, preview=true),
+        ]),
+      ]),
+      div(class="thumb-meta", [strong(slide.title), small(slide.eyebrow)]),
     ],
   )
 }
