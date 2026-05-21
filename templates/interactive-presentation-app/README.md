@@ -7,4 +7,8 @@ This template follows MoonBit's multi-target full-stack pattern:
 - `backend/` uses Mocket on Native to serve API data and frontend assets.
 - `public/index.html` is the browser shell copied by the preview script.
 
+The sample deck includes fixed layout presets, speaker notes, a presentation
+timer, keyboard navigation, automatic metrics refresh, and interactive chart
+controls.
+
 The preview entrypoint is `mooncraft-preview.sh`.

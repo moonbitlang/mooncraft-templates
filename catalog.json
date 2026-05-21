@@ -104,7 +104,7 @@
       "id": "interactive-presentation-app",
       "name": "Interactive Presentation",
       "path": "templates/interactive-presentation-app",
-      "description": "A full-stack MoonBit presentation app for code-powered decks, live metrics, and interactive slide components. The Rabbita JavaScript frontend and Mocket native backend share deck DTOs, JSON derivations, validation, and navigation rules through the shared package.",
+      "description": "A full-stack MoonBit presentation app for code-powered decks, live metrics, speaker notes, timers, layout presets, and interactive slide components. The Rabbita JavaScript frontend and Mocket native backend share deck DTOs, JSON derivations, validation, and navigation rules through the shared package.",
       "category": "fullstack",
       "useCases": [
         "web",

@@ -16,9 +16,11 @@ pub(all) struct Metric {
 pub(all) struct Slide {
   id : Int
   kind : String
+  layout : String
   eyebrow : String
   title : String
   body : String
+  notes : String
   points : Array[ChartPoint]
   metrics : Array[Metric]
 } derive(Debug, Eq, ToJson, @json.FromJson)
@@ -64,27 +66,49 @@ pub fn sample_deck() -> Deck {
       {
         id: 1,
         kind: "title",
+        layout: "hero",
         eyebrow: "Code-powered deck",
         title: "Interactive Presentation",
         body: "A MoonBit full-stack template for live decks, product demos, and explorable stories.",
+        notes: "Open with the idea that a slide deck can behave like an app when it is built with MoonBit.",
         points: [],
         metrics: [],
       },
       {
         id: 2,
+        kind: "agenda",
+        layout: "grid",
+        eyebrow: "Talk track",
+        title: "What this template demonstrates",
+        body: "A concise deck structure with reusable slide kinds and shared presentation rules.",
+        notes: "Use this slide to explain the shape of the template before showing live data.",
+        points: [
+          { label: "Shared deck model", value: 1 },
+          { label: "Backend-fed metrics", value: 2 },
+          { label: "Interactive chart", value: 3 },
+          { label: "Presenter controls", value: 4 },
+        ],
+        metrics: [],
+      },
+      {
+        id: 3,
         kind: "metrics",
+        layout: "metrics",
         eyebrow: "Live backend data",
         title: "Metrics without leaving the deck",
         body: "Typed JSON from the native backend flows through shared DTOs before it reaches the slide.",
+        notes: "The metrics refresh through the native backend route, but the JSON contract is defined once in shared.",
         points: [],
         metrics,
       },
       {
-        id: 3,
+        id: 4,
         kind: "chart",
+        layout: "chart",
         eyebrow: "Interactive visualization",
         title: "Adjust a scenario live",
         body: "The frontend owns browser state while shared logic keeps calculations deterministic.",
+        notes: "Move the slider to show how slide-local state can drive a visualization.",
         points: [
           { label: "Awareness", value: 38 },
           { label: "Trial", value: 56 },
@@ -94,11 +118,27 @@ pub fn sample_deck() -> Deck {
         metrics: [],
       },
       {
-        id: 4,
+        id: 5,
+        kind: "comparison",
+        layout: "split",
+        eyebrow: "Layout preset",
+        title: "Static slides vs app slides",
+        body: "A lightweight preset shows side-by-side content without building a full editor.",
+        notes: "This is intentionally a preset, not a drag-and-drop layout system.",
+        points: [
+          { label: "Static export", value: 42 },
+          { label: "Live MoonBit app", value: 86 },
+        ],
+        metrics: [],
+      },
+      {
+        id: 6,
         kind: "components",
+        layout: "grid",
         eyebrow: "Composable slides",
         title: "Slides are regular MoonBit UI",
         body: "Use forms, charts, simulations, API-backed numbers, and custom components inside one presentation frame.",
+        notes: "Point out that each tile is rendered by regular MoonBit frontend code.",
         points: [
           { label: "Keyboard", value: 100 },
           { label: "Fullscreen", value: 100 },
@@ -107,11 +147,24 @@ pub fn sample_deck() -> Deck {
         metrics: [],
       },
       {
-        id: 5,
+        id: 7,
+        kind: "quote",
+        layout: "quote",
+        eyebrow: "Narrative slide",
+        title: "A template should teach architecture by running",
+        body: "Readable examples are more useful to agents than hidden scaffolds.",
+        notes: "This slide gives agents a simple editorial pattern for quotation or emphasis slides.",
+        points: [],
+        metrics: [],
+      },
+      {
+        id: 8,
         kind: "closing",
+        layout: "hero",
         eyebrow: "Ready for agents",
         title: "Copy the architecture, not hidden scaffolds",
         body: "The template is a real MoonBit project with explicit frontend, shared, and backend packages.",
+        notes: "End by reinforcing the MoonCraft rule: templates are examples, not hidden generators.",
         points: [],
         metrics: [],
       },
@@ -129,6 +182,8 @@ pub fn validate_deck(deck : Deck) -> Result[Unit, String] {
     for slide in deck.slides {
       if slide.title.trim() == "" {
         return Err("Every slide needs a title.")
+      } else if slide.layout.trim() == "" {
+        return Err("Every slide needs a layout.")
       }
     }
     Ok(())
@@ -164,6 +219,21 @@ pub fn progress_percent(deck : Deck, index : Int) -> Int {
     0
   } else {
     (clamp_slide_index(deck, index) + 1) * 100 / count
+  }
+}
+
+///|
+pub fn slide_count(deck : Deck) -> Int {
+  deck.slides.length()
+}
+
+///|
+pub fn last_slide_index(deck : Deck) -> Int {
+  let count = slide_count(deck)
+  if count == 0 {
+    0
+  } else {
+    count - 1
   }
 }
 
