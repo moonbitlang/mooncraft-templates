@@ -159,6 +159,17 @@ pub fn sample_deck() -> Deck {
       },
       {
         id: 8,
+        kind: "object3d",
+        layout: "object",
+        eyebrow: "3D object viewer",
+        title: "Pink MoonBit word object",
+        body: "A lightweight browser component renders a draggable 3D word without pulling in a full model pipeline.",
+        notes: "This intentionally uses a simple custom element, not glTF or a large 3D dependency.",
+        points: [],
+        metrics: [],
+      },
+      {
+        id: 9,
         kind: "closing",
         layout: "hero",
         eyebrow: "Ready for agents",

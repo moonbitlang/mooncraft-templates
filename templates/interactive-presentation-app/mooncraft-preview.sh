@@ -17,5 +17,6 @@ mkdir -p preview-dist
 moon build --target js frontend
 cp _build/js/debug/build/frontend/frontend.js preview-dist/frontend.js
 cp public/index.html preview-dist/index.html
+cp public/object-viewer.js preview-dist/object-viewer.js
 
 exec moon run --target native backend -- preview-dist "$port"

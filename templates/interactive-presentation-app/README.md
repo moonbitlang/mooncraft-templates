@@ -9,6 +9,7 @@ This template follows MoonBit's multi-target full-stack pattern:
 
 The sample deck includes fixed layout presets, speaker notes, a presentation
 timer, keyboard navigation, automatic metrics refresh, and interactive chart
-controls.
+controls. It also includes a lightweight custom-element 3D viewer that renders a
+draggable pink `MoonBit` word without a heavy model pipeline.
 
 The preview entrypoint is `mooncraft-preview.sh`.

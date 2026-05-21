@@ -101,6 +101,19 @@
       flex-direction: column;
       justify-content: center;
     }
+    .object-slide {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(320px, 1fr);
+      gap: 32px;
+      align-items: center;
+      background: #fcfbff;
+    }
+    .object-copy { min-width: 0; }
+    mooncraft-word-viewer {
+      display: block;
+      width: 100%;
+      min-height: 420px;
+    }
     .title-slide {
       background: linear-gradient(135deg, #172026 0%, #30515a 48%, #8bd6c7 100%);
       color: #ffffff;
@@ -247,17 +260,20 @@
       .sidebar { max-height: 220px; }
       .thumb-list { grid-template-columns: repeat(5, minmax(160px, 1fr)); overflow-x: auto; }
       .stage-shell { min-height: calc(100vh - 220px); padding: 14px; }
-      .title-slide, .content-slide, .closing-slide, .quote-slide { padding: 32px; }
+      .title-slide, .content-slide, .closing-slide, .quote-slide, .object-slide { padding: 32px; }
       h1 { font-size: 42px; }
       h2 { font-size: 32px; }
       .lead, .body-copy { font-size: 17px; }
       .metrics-grid, .component-grid, .agenda-grid, .comparison-grid { grid-template-columns: 1fr; }
+      .object-slide { grid-template-columns: 1fr; }
+      mooncraft-word-viewer { min-height: 240px; }
       .toolbar { flex-wrap: wrap; }
     }
   </style>
 </head>
 <body>
   <main id="app"></main>
+  <script type="module" src="/object-viewer.js"></script>
   <script type="module" src="/frontend.js"></script>
 </body>
 </html>

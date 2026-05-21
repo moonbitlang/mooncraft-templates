@@ -10,6 +10,7 @@ using @html {
   input,
   label,
   main_,
+  node,
   nothing,
   p,
   progress,
@@ -411,6 +412,21 @@ fn view_quote_slide(slide : @shared.Slide) -> Html {
 }
 
 ///|
+fn view_object_slide(slide : @shared.Slide) -> Html {
+  let attrs = @html.Attrs::build()
+    .class("moonbit-object-viewer")
+    .data_set("word", "MoonBit")
+  div(class="slide object-slide layout-\{slide.layout}", [
+    div(class="object-copy", [
+      p(class="eyebrow", slide.eyebrow),
+      h2(slide.title),
+      p(class="body-copy", slide.body),
+    ]),
+    node("mooncraft-word-viewer", attrs, nothing),
+  ])
+}
+
+///|
 fn view_closing_slide(slide : @shared.Slide) -> Html {
   div(class="slide closing-slide layout-\{slide.layout}", [
     p(class="eyebrow", slide.eyebrow),
@@ -433,6 +449,7 @@ fn view_slide(
     "comparison" => view_comparison_slide(slide)
     "components" => view_components_slide(slide)
     "quote" => view_quote_slide(slide)
+    "object3d" => view_object_slide(slide)
     _ => view_closing_slide(slide)
   }
 }
