@@ -138,12 +138,22 @@
           "/api/deck",
           "/api/metrics",
           "/frontend.js",
-          "/object-viewer.js"
+          "/object-viewer.js",
+          "/vendor/three.module.js",
+          "/vendor/three.core.js",
+          "/vendor/FontLoader.js",
+          "/vendor/TextGeometry.js",
+          "/vendor/helvetiker_bold.typeface.json"
         ],
         "artifacts": [
           "preview-dist/index.html",
           "preview-dist/frontend.js",
-          "preview-dist/object-viewer.js"
+          "preview-dist/object-viewer.js",
+          "preview-dist/vendor/three.module.js",
+          "preview-dist/vendor/three.core.js",
+          "preview-dist/vendor/FontLoader.js",
+          "preview-dist/vendor/TextGeometry.js",
+          "preview-dist/vendor/helvetiker_bold.typeface.json"
         ]
       },
       "validation": {
@@ -161,7 +171,12 @@
             "/api/deck",
             "/api/metrics",
             "/frontend.js",
-            "/object-viewer.js"
+            "/object-viewer.js",
+            "/vendor/three.module.js",
+            "/vendor/three.core.js",
+            "/vendor/FontLoader.js",
+            "/vendor/TextGeometry.js",
+            "/vendor/helvetiker_bold.typeface.json"
           ]
         }
       }

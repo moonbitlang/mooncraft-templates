@@ -5,7 +5,7 @@ fn json_headers() -> Map[StringView, StringView] {
 
 ///|
 fn content_headers(content_type : String) -> Map[StringView, StringView] {
-  { "Content-Type": content_type }
+  { "Content-Type": content_type, "Cache-Control": "no-store, max-age=0" }
 }
 
 ///|
@@ -48,6 +48,36 @@ async fn serve(dist_dir : String, port : Int) -> Unit {
     asset_response(
       dist_dir + "/object-viewer.js",
       "text/javascript; charset=utf-8",
+    )
+  })
+  ..get("/vendor/three.module.js", _ => {
+    asset_response(
+      dist_dir + "/vendor/three.module.js",
+      "text/javascript; charset=utf-8",
+    )
+  })
+  ..get("/vendor/three.core.js", _ => {
+    asset_response(
+      dist_dir + "/vendor/three.core.js",
+      "text/javascript; charset=utf-8",
+    )
+  })
+  ..get("/vendor/FontLoader.js", _ => {
+    asset_response(
+      dist_dir + "/vendor/FontLoader.js",
+      "text/javascript; charset=utf-8",
+    )
+  })
+  ..get("/vendor/TextGeometry.js", _ => {
+    asset_response(
+      dist_dir + "/vendor/TextGeometry.js",
+      "text/javascript; charset=utf-8",
+    )
+  })
+  ..get("/vendor/helvetiker_bold.typeface.json", _ => {
+    asset_response(
+      dist_dir + "/vendor/helvetiker_bold.typeface.json",
+      "application/json; charset=utf-8",
     )
   })
   ..get("/favicon.ico", _ => @mocket.HttpResponse::new(NoContent))

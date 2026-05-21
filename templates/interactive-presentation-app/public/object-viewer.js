@@ -1,24 +1,26 @@
+import * as THREE from "./vendor/three.module.js";
+import { FontLoader } from "./vendor/FontLoader.js";
+import { TextGeometry } from "./vendor/TextGeometry.js";
+
 class MoonCraftWordViewer extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
-    this.rotationX = -18;
-    this.rotationY = -24;
+    this.raf = 0;
     this.dragging = false;
     this.lastX = 0;
     this.lastY = 0;
-    this.raf = 0;
+    this.targetYaw = -0.06;
+    this.targetPitch = -0.12;
+    this.idleTime = 0;
+    this.cameraZ = 22;
+    this.onResize = this.onResize.bind(this);
     this.onPointerMove = this.onPointerMove.bind(this);
     this.onPointerUp = this.onPointerUp.bind(this);
+    this.onWheel = this.onWheel.bind(this);
   }
 
   connectedCallback() {
-    const word = this.dataset.word || "MoonBit";
-    const layers = Array.from({ length: 18 }, (_, index) => {
-      const depth = 17 - index;
-      return `<span style="transform: translateZ(${-depth}px); filter: brightness(${72 + index * 2}%);">${word}</span>`;
-    }).join("");
-
     this.shadowRoot.innerHTML = `
       <style>
         :host {
@@ -27,7 +29,7 @@ class MoonCraftWordViewer extends HTMLElement {
           border: 1px solid #ead4e3;
           border-radius: 8px;
           background:
-            radial-gradient(circle at 30% 20%, rgba(255, 159, 205, 0.32), transparent 34%),
+            radial-gradient(circle at 28% 22%, rgba(255, 159, 205, 0.34), transparent 36%),
             linear-gradient(145deg, #fff6fb 0%, #f2f5ff 100%);
           overflow: hidden;
           touch-action: none;
@@ -35,68 +37,138 @@ class MoonCraftWordViewer extends HTMLElement {
         }
         :host(.dragging) { cursor: grabbing; }
         .viewport {
+          position: relative;
           width: 100%;
           height: 100%;
           min-height: inherit;
-          display: grid;
-          place-items: center;
-          perspective: 900px;
         }
-        .word {
-          position: relative;
-          width: min(82%, 480px);
-          height: 132px;
-          transform-style: preserve-3d;
-          transform: rotateX(var(--rx)) rotateY(var(--ry));
-          transition: transform 80ms linear;
-        }
-        span {
+        canvas {
           position: absolute;
           inset: 0;
-          display: grid;
-          place-items: center;
-          color: #ff5cad;
-          font: 900 clamp(40px, 6vw, 88px) / 1 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-          letter-spacing: 0;
-          text-shadow:
-            0 1px 0 #d83d8d,
-            0 2px 0 #bd2f7e,
-            0 14px 32px rgba(100, 20, 72, 0.28);
-          -webkit-text-stroke: 1px rgba(116, 16, 72, 0.22);
-          user-select: none;
-        }
-        span:last-child {
-          color: #ff73bd;
-          text-shadow:
-            0 1px 0 #ffd5eb,
-            0 18px 36px rgba(108, 30, 83, 0.25);
+          z-index: 2;
+          display: block;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
         }
         .hint {
           position: absolute;
           right: 16px;
           bottom: 12px;
+          z-index: 3;
           color: #7b6674;
           font: 600 12px / 1.2 ui-sans-serif, system-ui, sans-serif;
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .word { transition: none; }
+          pointer-events: none;
         }
       </style>
       <div class="viewport" aria-label="Draggable pink 3D MoonBit word">
-        <div class="word">${layers}</div>
-        <div class="hint">drag to rotate</div>
+        <div class="hint">drag to rotate · wheel to zoom</div>
       </div>
     `;
-    this.wordElement = this.shadowRoot.querySelector(".word");
-    this.setRotation();
-    this.addEventListener("pointerdown", (event) => this.onPointerDown(event));
-    this.start();
+
+    this.viewport = this.shadowRoot.querySelector(".viewport");
+    this.setupScene();
+    this.loadWord(this.dataset.word || "MoonBit").catch(() => {
+      this.classList.add("failed");
+    });
+
+    this.addEventListener("pointerdown", event => this.onPointerDown(event));
+    this.addEventListener("wheel", this.onWheel, { passive: false });
+    this.resizeObserver = new ResizeObserver(this.onResize);
+    this.resizeObserver.observe(this);
+    this.onResize();
+    this.animate();
   }
 
   disconnectedCallback() {
     cancelAnimationFrame(this.raf);
     window.removeEventListener("pointermove", this.onPointerMove);
     window.removeEventListener("pointerup", this.onPointerUp);
+    this.resizeObserver?.disconnect();
+    this.renderer?.dispose();
+    this.disposeScene();
+  }
+
+  setupScene() {
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    this.camera.position.set(0, 0, this.cameraZ);
+
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    this.renderer.setClearColor(0x000000, 0);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    this.viewport.appendChild(this.renderer.domElement);
+
+    this.scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+    const key = new THREE.DirectionalLight(0xffffff, 2.4);
+    key.position.set(8, 10, 12);
+    this.scene.add(key);
+    const rim = new THREE.DirectionalLight(0xff9bd0, 1.3);
+    rim.position.set(-8, -3, 8);
+    this.scene.add(rim);
+
+    this.word = new THREE.Group();
+    this.word.rotation.x = this.targetPitch;
+    this.word.rotation.y = this.targetYaw;
+    this.scene.add(this.word);
+  }
+
+  async loadWord(word) {
+    const loader = new FontLoader();
+    const font = await loader.loadAsync("/vendor/helvetiker_bold.typeface.json");
+    const geometry = new TextGeometry(word, {
+      font,
+      size: 1.9,
+      depth: 0.48,
+      curveSegments: 12,
+      bevelEnabled: true,
+      bevelThickness: 0.05,
+      bevelSize: 0.035,
+      bevelSegments: 4,
+    });
+    geometry.computeBoundingBox();
+    geometry.center();
+
+    const material = [
+      new THREE.MeshStandardMaterial({
+        color: 0xff5fb2,
+        roughness: 0.34,
+        metalness: 0.12,
+        emissive: 0x4a0828,
+        emissiveIntensity: 0.08,
+      }),
+      new THREE.MeshStandardMaterial({
+        color: 0xd82f89,
+        roughness: 0.5,
+        metalness: 0.06,
+      }),
+    ];
+    const mesh = new THREE.Mesh(geometry, material);
+    this.word.add(mesh);
+    this.classList.add("ready");
+  }
+
+  disposeScene() {
+    this.scene?.traverse(object => {
+      object.geometry?.dispose?.();
+      if (Array.isArray(object.material)) {
+        object.material.forEach(material => material.dispose?.());
+      } else {
+        object.material?.dispose?.();
+      }
+    });
+  }
+
+  onResize() {
+    if (!this.renderer || !this.camera) {
+      return;
+    }
+    const rect = this.getBoundingClientRect();
+    const width = Math.max(1, Math.floor(rect.width));
+    const height = Math.max(1, Math.floor(rect.height));
+    this.renderer.setSize(width, height, false);
+    this.camera.aspect = width / height;
+    this.camera.updateProjectionMatrix();
   }
 
   onPointerDown(event) {
@@ -113,12 +185,11 @@ class MoonCraftWordViewer extends HTMLElement {
     if (!this.dragging) {
       return;
     }
-    this.rotationY += (event.clientX - this.lastX) * 0.35;
-    this.rotationX -= (event.clientY - this.lastY) * 0.25;
-    this.rotationX = Math.max(-48, Math.min(32, this.rotationX));
+    this.targetYaw += (event.clientX - this.lastX) * 0.012;
+    this.targetPitch += (event.clientY - this.lastY) * 0.008;
+    this.targetPitch = Math.max(-0.82, Math.min(0.48, this.targetPitch));
     this.lastX = event.clientX;
     this.lastY = event.clientY;
-    this.setRotation();
   }
 
   onPointerUp() {
@@ -128,23 +199,22 @@ class MoonCraftWordViewer extends HTMLElement {
     window.removeEventListener("pointerup", this.onPointerUp);
   }
 
-  start() {
-    const step = () => {
-      if (!this.dragging) {
-        this.rotationY += 0.18;
-        this.setRotation();
-      }
-      this.raf = requestAnimationFrame(step);
-    };
-    this.raf = requestAnimationFrame(step);
+  onWheel(event) {
+    event.preventDefault();
+    this.cameraZ = Math.max(14, Math.min(32, this.cameraZ + event.deltaY * 0.01));
   }
 
-  setRotation() {
-    if (!this.wordElement) {
-      return;
+  animate() {
+    if (!this.dragging) {
+      this.idleTime += 0.012;
+      this.targetYaw = Math.sin(this.idleTime) * 0.16;
+      this.targetPitch = -0.12 + Math.sin(this.idleTime * 0.7) * 0.035;
     }
-    this.wordElement.style.setProperty("--rx", `${this.rotationX}deg`);
-    this.wordElement.style.setProperty("--ry", `${this.rotationY}deg`);
+    this.word.rotation.x += (this.targetPitch - this.word.rotation.x) * 0.12;
+    this.word.rotation.y += (this.targetYaw - this.word.rotation.y) * 0.12;
+    this.camera.position.z += (this.cameraZ - this.camera.position.z) * 0.12;
+    this.renderer.render(this.scene, this.camera);
+    this.raf = requestAnimationFrame(() => this.animate());
   }
 }
 
