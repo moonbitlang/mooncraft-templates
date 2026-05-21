@@ -1,11 +1,11 @@
 import {
   "moonbit-community/rabbita",
-  "moonbit-community/rabbita/common" @common,
+  "moonbit-community/rabbita/common",
   "moonbit-community/rabbita/html",
   "moonbit-community/rabbita/http",
   "moonbit-community/rabbita/sub",
   "moonbitlang/core/string",
-  "mooncraft/interactive_presentation_app/shared" @shared,
+  "mooncraft/interactive_presentation_app/shared",
 }
 
 supported_targets = "js"

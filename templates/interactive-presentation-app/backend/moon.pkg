@@ -1,5 +1,5 @@
 import {
-  "mooncraft/interactive_presentation_app/shared" @shared,
+  "mooncraft/interactive_presentation_app/shared",
   "moonbitlang/async",
   "moonbitlang/async/fs",
   "moonbitlang/core/env",
