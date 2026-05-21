@@ -3,6 +3,7 @@ import {
   "moonbit-community/rabbita/common",
   "moonbit-community/rabbita/html",
   "moonbit-community/rabbita/http",
+  "moonbit-community/rabbita/svg",
   "moonbit-community/rabbita/sub",
   "moonbitlang/core/string",
   "mooncraft/interactive_presentation_app/shared",

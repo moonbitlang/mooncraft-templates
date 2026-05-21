@@ -178,6 +178,151 @@
     .comparison-card span { font-size: 52px; font-weight: 800; color: #d95f43; }
     .metric strong { font-size: 42px; line-height: 1; }
     .trend { color: #23745f; font-weight: 700; }
+    .simulation-slide {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 10px;
+      padding: 28px 48px;
+      background: #ffffff;
+    }
+    .simulation-heading {
+      border-left: 5px solid #4b8cff;
+      padding-left: 14px;
+    }
+    .simulation-heading h2 {
+      margin-bottom: 4px;
+      font-size: 34px;
+      line-height: 1.05;
+    }
+    .simulation-heading .body-copy {
+      max-width: none;
+      margin-bottom: 0;
+      font-size: 16px;
+    }
+    .simulation-dashboard {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 2.05fr) minmax(300px, 1fr);
+      gap: 16px;
+    }
+    .market-chart-card, .sim-card {
+      border: 1px solid #dae2e5;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+    .market-chart-card {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      padding: 12px 14px 8px;
+    }
+    .market-chart-svg {
+      width: 100%;
+      height: 100%;
+      min-height: 260px;
+    }
+    .market-legend {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      padding-top: 8px;
+      color: #475467;
+      font-weight: 600;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .legend-line {
+      width: 18px;
+      height: 3px;
+      border-radius: 999px;
+      background: #4b8cff;
+    }
+    .legend-line.supply { background: #12b886; }
+    .legend-line.equilibrium { width: 10px; height: 10px; background: #f59e0b; }
+    .simulation-side {
+      min-height: 0;
+      display: grid;
+      gap: 6px;
+      font-size: 14px;
+    }
+    .sim-card {
+      padding: 6px 12px;
+    }
+    .sim-card h3 {
+      margin: 0 0 4px;
+      color: #344054;
+      font-size: 14px;
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    .curve-control { display: grid; gap: 2px; margin-top: 4px; }
+    .curve-control input {
+      width: 100%;
+      height: 14px;
+      margin: 0;
+    }
+    .curve-label, .outcome-row, .equilibrium-grid {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .curve-label strong { flex: 1; color: #344054; }
+    .curve-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #4b8cff;
+    }
+    .curve-dot.supply { background: #12b886; }
+    .curve-value {
+      min-width: 32px;
+      border-radius: 6px;
+      background: #f2f4f7;
+      padding: 3px 8px;
+      text-align: center;
+      font-weight: 800;
+    }
+    .curve-control small { color: #8a98ae; font-size: 10px; }
+    .equilibrium-card {
+      border-color: #f6d365;
+      background: #fffaf0;
+    }
+    .equilibrium-grid div {
+      display: grid;
+      gap: 6px;
+      min-width: 0;
+    }
+    .equilibrium-grid small { color: #d97706; font-size: 13px; }
+    .equilibrium-grid strong {
+      color: #7c2d12;
+      font-size: 22px;
+      line-height: 1;
+    }
+    .outcome-row {
+      padding: 2px 0;
+      color: #475467;
+      border-bottom: 1px solid #edf1f5;
+    }
+    .outcome-row:last-child { border-bottom: 0; }
+    .outcome-row strong { color: #475467; }
+    .outcome-row.blue strong { color: #4b8cff; }
+    .outcome-row.green strong { color: #009b72; }
+    .outcome-section-label {
+      display: block;
+      margin-top: 4px;
+      padding-top: 4px;
+      border-top: 1px solid #edf1f5;
+      color: #344054;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
     .slider-label {
       display: flex;
       justify-content: space-between;
@@ -200,6 +345,7 @@
       background: #4f7f8a;
       transition: width 180ms ease;
     }
+    .bar-fill.accent { background: #d95f43; }
     .bar-value { text-align: right; font-weight: 700; }
     .toolbar {
       min-height: 58px;
@@ -264,9 +410,10 @@
       h1 { font-size: 42px; }
       h2 { font-size: 32px; }
       .lead, .body-copy { font-size: 17px; }
-      .metrics-grid, .component-grid, .agenda-grid, .comparison-grid { grid-template-columns: 1fr; }
+      .metrics-grid, .component-grid, .agenda-grid, .comparison-grid, .simulation-dashboard { grid-template-columns: 1fr; }
       .object-slide { grid-template-columns: 1fr; }
       mooncraft-word-viewer { min-height: 240px; }
+      .market-chart-svg { min-height: 260px; }
       .toolbar { flex-wrap: wrap; }
     }
   </style>

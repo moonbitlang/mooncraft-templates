@@ -6,6 +6,7 @@ using @html {
   footer,
   h1,
   h2,
+  h3,
   header,
   input,
   label,
@@ -45,6 +46,8 @@ struct Model {
   current : Int
   zoom : Int
   factor : Int
+  simulation_demand_shift : Int
+  simulation_supply_shift : Int
   elapsed_seconds : Int
   busy : Bool
   fullscreen : Bool
@@ -66,6 +69,8 @@ enum Msg {
   ZoomIn
   ZoomOut
   FactorChanged(String)
+  SimulationDemandChanged(String)
+  SimulationSupplyChanged(String)
   ToggleFullscreen
   ToggleNotes
   ClosePanels
@@ -81,6 +86,8 @@ fn initial_model() -> Model {
     current: 0,
     zoom: 100,
     factor: 100,
+    simulation_demand_shift: 0,
+    simulation_supply_shift: 0,
     elapsed_seconds: 0,
     busy: false,
     fullscreen: false,
@@ -96,10 +103,15 @@ fn fetch_metrics(emit : @rabbita.Emit[Msg]) -> @rabbita.Cmd {
 
 ///|
 fn clamp_zoom(value : Int) -> Int {
-  if value < 80 {
-    80
-  } else if value > 140 {
-    140
+  clamp_int(value, 80, 140)
+}
+
+///|
+fn clamp_int(value : Int, min : Int, max : Int) -> Int {
+  if value < min {
+    min
+  } else if value > max {
+    max
   } else {
     value
   }
@@ -207,6 +219,30 @@ fn update(
         @rabbita.none,
         { ..model, factor: clamp_zoom(parse_percent(value, model.factor)) },
       )
+    SimulationDemandChanged(value) =>
+      (
+        @rabbita.none,
+        {
+          ..model,
+          simulation_demand_shift: clamp_int(
+            parse_percent(value, model.simulation_demand_shift),
+            -30,
+            30,
+          ),
+        },
+      )
+    SimulationSupplyChanged(value) =>
+      (
+        @rabbita.none,
+        {
+          ..model,
+          simulation_supply_shift: clamp_int(
+            parse_percent(value, model.simulation_supply_shift),
+            -30,
+            30,
+          ),
+        },
+      )
     ToggleFullscreen => {
       if model.fullscreen {
         exit_presentation_fullscreen()
@@ -290,6 +326,344 @@ fn view_chart(points : Array[@shared.ChartPoint], factor : Int) -> Html {
       ])
     }),
   )
+}
+
+///|
+fn abs_int(value : Int) -> Int {
+  if value < 0 {
+    -value
+  } else {
+    value
+  }
+}
+
+///|
+fn chart_x(quantity : Int) -> Int {
+  60 + quantity * 620 / 100
+}
+
+///|
+fn chart_y(price : Int) -> Int {
+  388 - clamp_int(price, 0, 140) * 360 / 140
+}
+
+///|
+fn demand_price(quantity : Int, shift : Int) -> Int {
+  clamp_int(
+    122 + shift - quantity * 245 / 100 + quantity * quantity / 100,
+    0,
+    140,
+  )
+}
+
+///|
+fn supply_price(quantity : Int, shift : Int) -> Int {
+  clamp_int(
+    15 + shift + quantity * 240 / 100 - quantity * quantity / 62,
+    0,
+    140,
+  )
+}
+
+///|
+fn equilibrium_quantity(model : Model) -> Int {
+  let mut best_quantity = 1
+  let mut best_gap = 999
+  for quantity in 1..<=100 {
+    let gap = abs_int(
+      demand_price(quantity, model.simulation_demand_shift) -
+      supply_price(quantity, model.simulation_supply_shift),
+    )
+    if gap < best_gap {
+      best_gap = gap
+      best_quantity = quantity
+    }
+  }
+  best_quantity
+}
+
+///|
+fn equilibrium_price(model : Model) -> Int {
+  let quantity = equilibrium_quantity(model)
+  (
+    demand_price(quantity, model.simulation_demand_shift) +
+    supply_price(quantity, model.simulation_supply_shift)
+  ) /
+  2
+}
+
+///|
+fn total_revenue(model : Model) -> Int {
+  equilibrium_price(model) * equilibrium_quantity(model)
+}
+
+///|
+fn total_cost(model : Model) -> Int {
+  total_revenue(model) * 66 / 100
+}
+
+///|
+fn profit(model : Model) -> Int {
+  total_revenue(model) - total_cost(model)
+}
+
+///|
+fn profit_margin(model : Model) -> Int {
+  if total_revenue(model) == 0 {
+    0
+  } else {
+    profit(model) * 100 / total_revenue(model)
+  }
+}
+
+///|
+fn consumer_surplus(model : Model) -> Int {
+  let quantity = equilibrium_quantity(model)
+  let price = equilibrium_price(model)
+  (demand_price(1, model.simulation_demand_shift) - price) * quantity / 2
+}
+
+///|
+fn producer_surplus(model : Model) -> Int {
+  let quantity = equilibrium_quantity(model)
+  let price = equilibrium_price(model)
+  (price - supply_price(1, model.simulation_supply_shift)) * quantity / 2
+}
+
+///|
+fn demand_points(model : Model) -> Array[(Int, Int)] {
+  let points : Array[(Int, Int)] = []
+  for quantity in 0..<=100 {
+    points.push(
+      (
+        chart_x(quantity),
+        chart_y(demand_price(quantity, model.simulation_demand_shift)),
+      ),
+    )
+  }
+  points
+}
+
+///|
+fn supply_points(model : Model) -> Array[(Int, Int)] {
+  let points : Array[(Int, Int)] = []
+  for quantity in 0..<=100 {
+    points.push(
+      (
+        chart_x(quantity),
+        chart_y(supply_price(quantity, model.simulation_supply_shift)),
+      ),
+    )
+  }
+  points
+}
+
+///|
+fn grid_lines() -> Array[@svg.Svg] {
+  let nodes : Array[@svg.Svg] = []
+  for quantity in 0..<=10 {
+    let x = chart_x(quantity * 10)
+    nodes.push(
+      @svg.line(
+        x1=x,
+        y1=28,
+        x2=x,
+        y2=388,
+        stroke="#e0e8f2",
+        stroke_width=1,
+        attrs=@svg.Attrs::build().stroke_dasharray("2 4"),
+      ),
+    )
+  }
+  for price in [0, 35, 70, 105, 140] {
+    let y = chart_y(price)
+    nodes.push(
+      @svg.line(
+        x1=60,
+        y1=y,
+        x2=680,
+        y2=y,
+        stroke="#d9e4ef",
+        stroke_width=1,
+        attrs=@svg.Attrs::build().stroke_dasharray("3 4"),
+      ),
+    )
+    nodes.push(
+      @svg.svg_text(
+        x=42,
+        y=y + 4,
+        text="\{price}",
+        fill="#708199",
+        attrs=@svg.Attrs::build().font_size("10").text_anchor("end"),
+      ),
+    )
+  }
+  nodes
+}
+
+///|
+fn market_chart(model : Model) -> Html {
+  let quantity = equilibrium_quantity(model)
+  let price = equilibrium_price(model)
+  let x = chart_x(quantity)
+  let y = chart_y(price)
+  let nodes = grid_lines()
+  nodes.push(
+    @svg.polyline(
+      points=demand_points(model),
+      fill="none",
+      stroke="#4b8cff",
+      stroke_width=2,
+      stroke_linecap="round",
+    ),
+  )
+  nodes.push(
+    @svg.polyline(
+      points=supply_points(model),
+      fill="none",
+      stroke="#12b886",
+      stroke_width=2,
+      stroke_linecap="round",
+    ),
+  )
+  nodes.push(
+    @svg.line(
+      x1=60,
+      y1=y,
+      x2=680,
+      y2=y,
+      stroke="#f59e0b",
+      stroke_width=1,
+      attrs=@svg.Attrs::build().stroke_dasharray("5 5"),
+    ),
+  )
+  nodes.push(@svg.circle(cx=x, cy=y, r=5, fill="#f59e0b"))
+  nodes.push(
+    @svg.svg_text(
+      x=370,
+      y=438,
+      text="Quantity (units)",
+      fill="#667085",
+      attrs=@svg.Attrs::build().font_size("12").text_anchor("middle"),
+    ),
+  )
+  nodes.push(
+    @svg.svg_text(
+      x=18,
+      y=210,
+      text="Price ($)",
+      fill="#667085",
+      transform="rotate(-90 18 210)",
+      attrs=@svg.Attrs::build().font_size("12").text_anchor("middle"),
+    ),
+  )
+  @svg.svg(
+    class="market-chart-svg",
+    view_box="0 0 720 460",
+    attrs=@svg.Attrs::build().preserve_aspect_ratio("xMidYMid meet"),
+    nodes,
+  )
+}
+
+///|
+fn view_curve_control(
+  emit : @rabbita.Emit[Msg],
+  control_label : String,
+  value : Int,
+  tone : String,
+  msg : (String) -> Msg,
+  hint : String,
+) -> Html {
+  div(class="curve-control", [
+    label(class="curve-label", [
+      span(class="curve-dot \{tone}", ""),
+      strong(control_label),
+      span(class="curve-value", "\{value}"),
+    ]),
+    input(
+      input_type=Range,
+      min=-30,
+      max=30,
+      value="\{value}",
+      on_input=value => emit(msg(value)),
+      nothing,
+    ),
+    small(hint),
+  ])
+}
+
+///|
+fn outcome_row(label : String, value : String, tone? : String = "") -> Html {
+  div(class="outcome-row \{tone}", [span(label), strong(value)])
+}
+
+///|
+fn legend_item(label : String, tone : String) -> Html {
+  span(class="legend-item", [span(class="legend-line \{tone}", ""), span(label)])
+}
+
+///|
+fn view_simulation_slide(
+  emit : @rabbita.Emit[Msg],
+  model : Model,
+  slide : @shared.Slide,
+) -> Html {
+  let quantity = equilibrium_quantity(model)
+  let price = equilibrium_price(model)
+  div(class="slide simulation-slide layout-\{slide.layout}", [
+    div(class="simulation-heading", [
+      h2(slide.title),
+      p(class="body-copy", slide.body),
+    ]),
+    div(class="simulation-dashboard", [
+      div(class="market-chart-card", [
+        market_chart(model),
+        div(class="market-legend", [
+          legend_item("Demand", "demand"),
+          legend_item("Supply", "supply"),
+          legend_item("Equilibrium", "equilibrium"),
+        ]),
+      ]),
+      div(class="simulation-side", [
+        div(class="sim-card", [
+          h3("Curve controls"),
+          view_curve_control(
+            emit,
+            "Demand Shift",
+            model.simulation_demand_shift,
+            "demand",
+            value => SimulationDemandChanged(value),
+            "<- Less demand | More demand ->",
+          ),
+          view_curve_control(
+            emit,
+            "Supply Shift",
+            model.simulation_supply_shift,
+            "supply",
+            value => SimulationSupplyChanged(value),
+            "<- Lower costs | Higher costs ->",
+          ),
+        ]),
+        div(class="sim-card equilibrium-card", [
+          h3("Market equilibrium"),
+          div(class="equilibrium-grid", [
+            div([small("Price"), strong("$\{price}")]),
+            div([small("Quantity"), strong("\{quantity}")]),
+          ]),
+        ]),
+        div(class="sim-card", [
+          h3("Financial outcomes"),
+          outcome_row("Total Revenue", "$\{total_revenue(model)}", tone="blue"),
+          outcome_row("Total Cost", "$\{total_cost(model)}"),
+          outcome_row("Profit", "$\{profit(model)}", tone="green"),
+          outcome_row("Profit Margin", "\{profit_margin(model)}%", tone="green"),
+          small(class="outcome-section-label", "Economic surplus"),
+          outcome_row("Consumer", "$\{consumer_surplus(model)}", tone="blue"),
+          outcome_row("Producer", "$\{producer_surplus(model)}", tone="green"),
+        ]),
+      ]),
+    ]),
+  ])
 }
 
 ///|
@@ -444,6 +818,7 @@ fn view_slide(
   match slide.kind {
     "title" => view_title_slide(slide)
     "agenda" => view_agenda_slide(slide)
+    "simulation" => view_simulation_slide(emit, model, slide)
     "metrics" => view_metrics_slide(emit, model, slide)
     "chart" => view_chart_slide(emit, model, slide)
     "comparison" => view_comparison_slide(slide)

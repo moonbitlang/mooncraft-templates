@@ -92,6 +92,20 @@ pub fn sample_deck() -> Deck {
       },
       {
         id: 3,
+        kind: "simulation",
+        layout: "simulation",
+        eyebrow: "Market model",
+        title: "Interactive simulations",
+        body: "Adjust the curves to see real-time market equilibrium and economic outcomes.",
+        notes: "Move demand and supply shifts to explain how market pressure changes price, quantity, and profit.",
+        points: [
+          { label: "Demand shift", value: 0 },
+          { label: "Supply shift", value: 0 },
+        ],
+        metrics: [],
+      },
+      {
+        id: 4,
         kind: "metrics",
         layout: "metrics",
         eyebrow: "Live backend data",
@@ -102,7 +116,7 @@ pub fn sample_deck() -> Deck {
         metrics,
       },
       {
-        id: 4,
+        id: 5,
         kind: "chart",
         layout: "chart",
         eyebrow: "Interactive visualization",
@@ -118,7 +132,7 @@ pub fn sample_deck() -> Deck {
         metrics: [],
       },
       {
-        id: 5,
+        id: 6,
         kind: "comparison",
         layout: "split",
         eyebrow: "Channel tradeoff",
@@ -132,7 +146,7 @@ pub fn sample_deck() -> Deck {
         metrics: [],
       },
       {
-        id: 6,
+        id: 7,
         kind: "components",
         layout: "grid",
         eyebrow: "Presentation controls",
@@ -147,7 +161,7 @@ pub fn sample_deck() -> Deck {
         metrics: [],
       },
       {
-        id: 7,
+        id: 8,
         kind: "object3d",
         layout: "object",
         eyebrow: "Brand moment",
