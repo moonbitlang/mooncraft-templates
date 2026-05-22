@@ -56,7 +56,7 @@ fn update(
       match @shared.validate_content(model.draft) {
         Ok(content) =>
           (
-            @http.post("/api/todos")
+            @http.post("api/todos")
             .with_json(@shared.CreateTodo::{ content, })
             .expect_json(result => emit(TodoCreated(result))),
             { ..model, draft: "", busy: true, error: None },
@@ -66,14 +66,14 @@ fn update(
       }
     Toggle(todo) =>
       (
-        @http.patch("/api/todos/\{todo.id}")
+        @http.patch("api/todos/\{todo.id}")
         .with_json(@shared.UpdateTodo::{ completed: !todo.completed })
         .expect_json(result => emit(TodoUpdated(result))),
         { ..model, busy: true, error: None },
       )
     Delete(id) =>
       (
-        @http.delete("/api/todos/\{id}").expect_empty(result => {
+        @http.delete("api/todos/\{id}").expect_empty(result => {
           emit(TodoDeleted(id, result))
         }),
         { ..model, busy: true, error: None },

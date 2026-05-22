@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import json
 from pathlib import Path
+import re
 import sys
 
 VALID_FRONTEND_FRAMEWORKS = {"rabbita", "selene-webgpu", "wasm-exports"}
@@ -18,6 +19,18 @@ FRAMEWORK_DEPS = {
     "selene-webgpu": "Milky2018/selene_webgpu",
     "async-http": "moonbitlang/async",
 }
+PUBLIC_ABSOLUTE_PATH_PATTERNS = [
+    re.compile(r"""\b(?:src|href)\s*=\s*["']/"""),
+    re.compile(r"""\bfetch\(\s*["']/"""),
+    re.compile(r"""\bimport\(\s*["']/"""),
+    re.compile(r"""\bnew\s+Worker\(\s*["']/"""),
+    re.compile(r"""\bloadAsync\(\s*["']/"""),
+    re.compile(r"""\bfrom\s+["']/"""),
+    re.compile(r"""\burl\(\s*["']?/"""),
+]
+FRONTEND_ABSOLUTE_API_PATTERN = re.compile(
+    r"""@http\.(?:get|post|patch|delete|put)\(\s*"/"""
+)
 
 
 def require(condition, message):
@@ -72,10 +85,34 @@ def validate_template(root, template):
 
     path = validate_path(template_id, template["path"])
     template_dir = root / path
+    validate_relative_client_paths(template_id, template_dir)
     architecture = validate_architecture(root, template_id, template_dir)
     artifacts = expected_artifacts(template_dir, architecture)
     smoke_paths = expected_smoke_paths(artifacts)
     return path, smoke_paths, artifacts
+
+
+def validate_relative_client_paths(template_id, template_dir):
+    public_dir = template_dir / "public"
+    if public_dir.is_dir():
+        for path in public_dir.rglob("*"):
+            if path.suffix not in {".html", ".js", ".css"}:
+                continue
+            text = path.read_text(encoding="utf-8")
+            for pattern in PUBLIC_ABSOLUTE_PATH_PATTERNS:
+                require(
+                    pattern.search(text) is None,
+                    f"{template_id} browser asset paths must be relative: {path}",
+                )
+
+    frontend_dir = template_dir / "frontend"
+    if frontend_dir.is_dir():
+        for path in frontend_dir.rglob("*.mbt"):
+            text = path.read_text(encoding="utf-8")
+            require(
+                FRONTEND_ABSOLUTE_API_PATTERN.search(text) is None,
+                f"{template_id} frontend fetch API paths must be relative: {path}",
+            )
 
 
 def validate_path(template_id, raw_path):

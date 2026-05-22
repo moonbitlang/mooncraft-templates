@@ -21,7 +21,8 @@
   <script type="module">
     const canvas = document.getElementById("canvas");
     const slider = document.getElementById("iter");
-    const { instance } = await WebAssembly.instantiateStreaming(fetch("/frontend.wasm"), {});
+    const wasmUrl = new URL("./frontend.wasm", import.meta.url);
+    const { instance } = await WebAssembly.instantiateStreaming(fetch(wasmUrl), {});
     const api = instance.exports;
     const width = api.default_width();
     const height = api.default_height();

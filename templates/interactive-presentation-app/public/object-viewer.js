@@ -115,7 +115,8 @@ class MoonCraftWordViewer extends HTMLElement {
 
   async loadWord(word) {
     const loader = new FontLoader();
-    const font = await loader.loadAsync("/vendor/helvetiker_bold.typeface.json");
+    const fontUrl = new URL("./vendor/helvetiker_bold.typeface.json", import.meta.url);
+    const font = await loader.loadAsync(fontUrl.href);
     const geometry = new TextGeometry(word, {
       font,
       size: 1.9,

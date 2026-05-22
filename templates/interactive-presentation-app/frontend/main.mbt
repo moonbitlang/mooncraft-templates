@@ -98,7 +98,7 @@ fn initial_model() -> Model {
 
 ///|
 fn fetch_metrics(emit : @rabbita.Emit[Msg]) -> @rabbita.Cmd {
-  @http.get("/api/metrics").expect_json(result => emit(MetricsLoaded(result)))
+  @http.get("api/metrics").expect_json(result => emit(MetricsLoaded(result)))
 }
 
 ///|
