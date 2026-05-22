@@ -6,42 +6,11 @@
       "path": "templates/minimal-static-app",
       "description": "A smallest useful MoonCraft app shape: MoonBit renders one static HTML page and a native async/http backend serves it directly. Use this when an agent needs a minimal web preview without browser-side MoonBit bundles.",
       "category": "minimal",
-      "useCases": [
+      "keywords": [
         "web",
         "static",
         "preview"
-      ],
-      "architecture": {
-        "shape": "native-only",
-        "backend": {
-          "target": "native",
-          "framework": "async-http"
-        }
-      },
-      "runtime": {
-        "previewScript": "mooncraft-preview.sh",
-        "defaultPort": 4300,
-        "host": "0.0.0.0",
-        "serves": [
-          "/",
-          "/api/health"
-        ],
-        "artifacts": []
-      },
-      "validation": {
-        "commands": [
-          "moon fmt --check",
-          "moon check",
-          "moon build",
-          "moon test"
-        ],
-        "previewSmoke": {
-          "paths": [
-            "/",
-            "/api/health"
-          ]
-        }
-      }
+      ]
     },
     {
       "id": "todo-isomorphic-app",
@@ -49,56 +18,13 @@
       "path": "templates/todo-isomorphic-app",
       "description": "A full-stack MoonBit web app using the frontend/shared/backend layout from MoonBit's multiple-target architecture. The Rabbita JavaScript frontend and Mocket native backend share typed DTOs, JSON derivations, and validation from the shared package.",
       "category": "fullstack",
-      "useCases": [
+      "keywords": [
         "web",
         "forms",
         "crud",
         "fullstack",
         "isomorphic"
-      ],
-      "architecture": {
-        "shape": "frontend/shared/backend",
-        "frontend": {
-          "target": "js",
-          "framework": "rabbita"
-        },
-        "shared": {
-          "purpose": "DTOs, JSON derivation, and validation"
-        },
-        "backend": {
-          "target": "native",
-          "framework": "mocket"
-        }
-      },
-      "runtime": {
-        "previewScript": "mooncraft-preview.sh",
-        "defaultPort": 4300,
-        "host": "0.0.0.0",
-        "serves": [
-          "/",
-          "/api/health",
-          "/api/todos"
-        ],
-        "artifacts": [
-          "preview-dist/index.html",
-          "preview-dist/frontend.js"
-        ]
-      },
-      "validation": {
-        "commands": [
-          "moon fmt --check",
-          "moon check",
-          "moon build",
-          "moon test",
-          "moon build --target js frontend"
-        ],
-        "previewSmoke": {
-          "paths": [
-            "/",
-            "/api/health"
-          ]
-        }
-      }
+      ]
     },
     {
       "id": "interactive-presentation-app",
@@ -106,80 +32,14 @@
       "path": "templates/interactive-presentation-app",
       "description": "A full-stack MoonBit presentation app for code-powered decks, live metrics, speaker notes, timers, layout presets, a lightweight 3D MoonBit word viewer, and interactive slide components. The Rabbita JavaScript frontend and Mocket native backend share deck DTOs, JSON derivations, validation, and navigation rules through the shared package.",
       "category": "fullstack",
-      "useCases": [
+      "keywords": [
         "web",
         "presentations",
         "visualization",
         "interactive",
         "fullstack",
         "isomorphic"
-      ],
-      "architecture": {
-        "shape": "frontend/shared/backend",
-        "frontend": {
-          "target": "js",
-          "framework": "rabbita"
-        },
-        "shared": {
-          "purpose": "Deck DTOs, JSON derivation, validation, navigation, and progress rules"
-        },
-        "backend": {
-          "target": "native",
-          "framework": "mocket"
-        }
-      },
-      "runtime": {
-        "previewScript": "mooncraft-preview.sh",
-        "defaultPort": 4300,
-        "host": "0.0.0.0",
-        "serves": [
-          "/",
-          "/api/health",
-          "/api/deck",
-          "/api/metrics",
-          "/frontend.js",
-          "/object-viewer.js",
-          "/vendor/three.module.js",
-          "/vendor/three.core.js",
-          "/vendor/FontLoader.js",
-          "/vendor/TextGeometry.js",
-          "/vendor/helvetiker_bold.typeface.json"
-        ],
-        "artifacts": [
-          "preview-dist/index.html",
-          "preview-dist/frontend.js",
-          "preview-dist/object-viewer.js",
-          "preview-dist/vendor/three.module.js",
-          "preview-dist/vendor/three.core.js",
-          "preview-dist/vendor/FontLoader.js",
-          "preview-dist/vendor/TextGeometry.js",
-          "preview-dist/vendor/helvetiker_bold.typeface.json"
-        ]
-      },
-      "validation": {
-        "commands": [
-          "moon fmt --check",
-          "moon check",
-          "moon build",
-          "moon test",
-          "moon build --target js frontend"
-        ],
-        "previewSmoke": {
-          "paths": [
-            "/",
-            "/api/health",
-            "/api/deck",
-            "/api/metrics",
-            "/frontend.js",
-            "/object-viewer.js",
-            "/vendor/three.module.js",
-            "/vendor/three.core.js",
-            "/vendor/FontLoader.js",
-            "/vendor/TextGeometry.js",
-            "/vendor/helvetiker_bold.typeface.json"
-          ]
-        }
-      }
+      ]
     },
     {
       "id": "wasm-mandelbrot-app",
@@ -187,54 +47,12 @@
       "path": "templates/wasm-mandelbrot-app",
       "description": "A MoonCraft web app focused on browser WebAssembly compute. The frontend package exports MoonBit functions as a Wasm module, a small native async/http backend serves the browser shell and Wasm artifact, and there is no shared package because the backend does not consume domain types.",
       "category": "wasm",
-      "useCases": [
+      "keywords": [
         "web",
         "wasm",
         "compute",
         "visualization"
-      ],
-      "architecture": {
-        "shape": "frontend/backend",
-        "frontend": {
-          "target": "wasm",
-          "framework": "wasm-exports"
-        },
-        "backend": {
-          "target": "native",
-          "framework": "async-http"
-        }
-      },
-      "runtime": {
-        "previewScript": "mooncraft-preview.sh",
-        "defaultPort": 4300,
-        "host": "0.0.0.0",
-        "serves": [
-          "/",
-          "/api/health",
-          "/frontend.wasm"
-        ],
-        "artifacts": [
-          "preview-dist/index.html",
-          "preview-dist/frontend.wasm"
-        ]
-      },
-      "validation": {
-        "commands": [
-          "moon fmt --check",
-          "moon check",
-          "moon build",
-          "moon test",
-          "moon test --target wasm frontend",
-          "moon build --target wasm frontend"
-        ],
-        "previewSmoke": {
-          "paths": [
-            "/",
-            "/api/health",
-            "/frontend.wasm"
-          ]
-        }
-      }
+      ]
     },
     {
       "id": "selene-minesweeper-game",
@@ -242,53 +60,12 @@
       "path": "templates/selene-minesweeper-game",
       "description": "A browser game template using Selene with the selene_webgpu backend. The JavaScript frontend owns the game loop and rendering, while the native async/http backend stays minimal and only serves the generated game asset and browser shell.",
       "category": "game",
-      "useCases": [
+      "keywords": [
         "web",
         "games",
         "webgpu",
         "interactive"
-      ],
-      "architecture": {
-        "shape": "frontend/backend",
-        "frontend": {
-          "target": "js",
-          "framework": "selene-webgpu"
-        },
-        "backend": {
-          "target": "native",
-          "framework": "async-http"
-        }
-      },
-      "runtime": {
-        "previewScript": "mooncraft-preview.sh",
-        "defaultPort": 4300,
-        "host": "0.0.0.0",
-        "serves": [
-          "/",
-          "/api/health",
-          "/frontend.js"
-        ],
-        "artifacts": [
-          "preview-dist/index.html",
-          "preview-dist/frontend.js"
-        ]
-      },
-      "validation": {
-        "commands": [
-          "moon fmt --check",
-          "moon check",
-          "moon build",
-          "moon test",
-          "moon build --target js frontend"
-        ],
-        "previewSmoke": {
-          "paths": [
-            "/",
-            "/api/health",
-            "/frontend.js"
-          ]
-        }
-      }
+      ]
     },
     {
       "id": "selene-3d-tank-game",
@@ -296,55 +73,13 @@
       "path": "templates/selene-3d-tank-game",
       "description": "A browser 3D game template using Selene with the selene_webgpu backend. The JavaScript frontend owns a 1920x1080 tank arena with camera, lighting, keyboard movement, mouse-driven tank view and turret turning, click-to-fire projectile gameplay, moving enemy tanks, enemy turret tracking and firing, obstacle collision, tank collision, and projectile hit rules, while the native async/http backend only serves the generated game bundle and browser shell.",
       "category": "game",
-      "useCases": [
+      "keywords": [
         "web",
         "games",
         "webgpu",
         "3d",
         "interactive"
-      ],
-      "architecture": {
-        "shape": "frontend/backend",
-        "frontend": {
-          "target": "js",
-          "framework": "selene-webgpu"
-        },
-        "backend": {
-          "target": "native",
-          "framework": "async-http"
-        }
-      },
-      "runtime": {
-        "previewScript": "mooncraft-preview.sh",
-        "defaultPort": 4300,
-        "host": "0.0.0.0",
-        "serves": [
-          "/",
-          "/api/health",
-          "/frontend.js"
-        ],
-        "artifacts": [
-          "preview-dist/index.html",
-          "preview-dist/frontend.js"
-        ]
-      },
-      "validation": {
-        "commands": [
-          "moon fmt --check",
-          "moon check",
-          "moon build",
-          "moon test",
-          "moon test --target js frontend",
-          "moon build --target js frontend"
-        ],
-        "previewSmoke": {
-          "paths": [
-            "/",
-            "/api/health",
-            "/frontend.js"
-          ]
-        }
-      }
+      ]
     }
   ]
 }

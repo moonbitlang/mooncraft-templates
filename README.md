@@ -24,6 +24,9 @@ similar app shape.
 ## Layout
 
 - `catalog.json` indexes the available templates and must match `templates/`.
+  Entries should only contain `id`, `name`, `path`, `description`, `category`,
+  and `keywords`; validation derives architecture and runtime checks from the
+  real template files.
 - `templates/` contains runnable MoonBit app examples.
 - `knowledge/` contains concise MoonBit and MoonCraft guidance.
 - `scripts/validate-all.sh` validates every template.
