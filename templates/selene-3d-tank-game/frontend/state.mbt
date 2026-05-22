@@ -62,16 +62,16 @@ const ENEMY_RELOAD_SECONDS : Double = 1.65
 const CAMERA_FOV_Y_DEGREES : Double = 55.0
 
 ///|
-const CAMERA_DISTANCE : Double = 30.0
+const CAMERA_DISTANCE : Double = 12.0
 
 ///|
-const CAMERA_HEIGHT : Double = 14.0
+const CAMERA_HEIGHT : Double = 5.2
 
 ///|
-const CAMERA_LOOK_AHEAD : Double = 7.5
+const CAMERA_LOOK_AHEAD : Double = 5.0
 
 ///|
-const CAMERA_TARGET_HEIGHT : Double = 1.0
+const CAMERA_TARGET_HEIGHT : Double = 1.2
 
 ///|
 const MOUSE_TURN_SENSITIVITY : Double = 0.004
