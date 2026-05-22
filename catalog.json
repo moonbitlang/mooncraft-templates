@@ -294,7 +294,7 @@
       "id": "selene-3d-tank-game",
       "name": "Selene 3D Tank Game",
       "path": "templates/selene-3d-tank-game",
-      "description": "A browser 3D game template using Selene with the selene_webgpu backend. The JavaScript frontend owns a small tank arena with camera, lighting, keyboard controls, and projectile gameplay, while the native async/http backend only serves the generated game bundle and browser shell.",
+      "description": "A browser 3D game template using Selene with the selene_webgpu backend. The JavaScript frontend owns a small tank arena with camera, lighting, keyboard movement, mouse-driven tank view and turret turning, click-to-fire projectile gameplay, and enemy tank models, while the native async/http backend only serves the generated game bundle and browser shell.",
       "category": "game",
       "useCases": [
         "web",

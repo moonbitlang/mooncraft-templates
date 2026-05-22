@@ -214,25 +214,16 @@ fn set_text_entity(entity : @entity.Entity, content : String) -> Unit {
 fn setup_camera_and_lighting() -> Unit {
   ensure_entity_alive(camera_entity)
   ensure_entity_alive(light_entity)
-  let camera_position = @math.Vec3::Vec3(0.0, 6.2, 13.5)
-  let camera_target = @math.Vec3::Vec3(0.0, 0.9, -2.2)
   @camera3d.cameras3d().set(camera_entity, {
     ..@camera3d.Camera3DComponent::default(),
-    fov_y: 55.0,
+    fov_y: CAMERA_FOV_Y_DEGREES,
     near: 0.01,
     far: 100.0,
     clear_color: color_rgba(9U, 15U, 26U, 1.0),
     order: 10,
     enabled: true,
   })
-  @transform.transforms().set(
-    camera_entity,
-    world_transform(
-      camera_position,
-      look_rotation(camera_position, camera_target),
-      @math.Vec3::one(),
-    ),
-  )
+  sync_camera_transform()
 
   @render3d.directional_lights3d().set(light_entity, {
     ..@render3d.default_directional_light3d(),
@@ -247,6 +238,19 @@ fn setup_camera_and_lighting() -> Unit {
 }
 
 ///|
+fn sync_camera_transform() -> Unit {
+  ensure_entity_alive(camera_entity)
+  @transform.transforms().set(
+    camera_entity,
+    world_transform(
+      camera_position(),
+      look_rotation(camera_position(), camera_target()),
+      @math.Vec3::one(),
+    ),
+  )
+}
+
+///|
 fn sync_tank_render() -> Unit {
   sync_tank_parts(
     tank_left_track_entity,
@@ -256,7 +260,7 @@ fn sync_tank_render() -> Unit {
     tank_barrel_entity,
     tank.position,
     tank.yaw,
-    tank.yaw,
+    tank.turret_yaw,
     tank_material.val.unwrap(),
     turret_material.val.unwrap(),
   )
@@ -376,7 +380,7 @@ fn sync_hud() -> Unit {
   let status = if all_enemies_destroyed() {
     "All enemy tanks down. Press R to reset."
   } else {
-    "WASD/Arrows drive · Space fires · R resets"
+    "WASD/Arrows drive · Mouse turns view · Click/Space fires · R resets"
   }
   set_text_entity(hud_entity, "3D Tank · Score \{tank.score}\n\{status}")
 }

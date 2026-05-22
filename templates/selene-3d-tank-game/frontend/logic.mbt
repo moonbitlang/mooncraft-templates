@@ -15,17 +15,46 @@ fn clamp_double(
 
 ///|
 fn forward_from_yaw(yaw : Double) -> @math.Vec3 {
-  @math.Vec3::Vec3(@cmath.sin(yaw), 0.0, -@cmath.cos(yaw))
+  @math.Vec3::Vec3(-@cmath.sin(yaw), 0.0, -@cmath.cos(yaw))
 }
 
 ///|
 fn yaw_to(from : @math.Vec3, to : @math.Vec3) -> Double {
-  @cmath.atan2(to.x - from.x, -(to.z - from.z))
+  @cmath.atan2(-(to.x - from.x), -(to.z - from.z))
 }
 
 ///|
 fn offset_from_yaw(yaw : Double, offset : @math.Vec3) -> @math.Vec3 {
   yaw_rotation(yaw).rotate_vec3(offset)
+}
+
+///|
+fn mouse_turn_yaw(yaw : Double, movement_x : Double) -> Double {
+  yaw - movement_x * MOUSE_TURN_SENSITIVITY
+}
+
+///|
+fn camera_position_for(position : @math.Vec3, yaw : Double) -> @math.Vec3 {
+  position -
+  forward_from_yaw(yaw).scalar_mul(CAMERA_DISTANCE) +
+  @math.Vec3::Vec3(0.0, CAMERA_HEIGHT, 0.0)
+}
+
+///|
+fn camera_target_for(position : @math.Vec3, yaw : Double) -> @math.Vec3 {
+  position +
+  forward_from_yaw(yaw).scalar_mul(CAMERA_LOOK_AHEAD) +
+  @math.Vec3::Vec3(0.0, CAMERA_TARGET_HEIGHT, 0.0)
+}
+
+///|
+fn camera_position() -> @math.Vec3 {
+  camera_position_for(tank.position, tank.turret_yaw)
+}
+
+///|
+fn camera_target() -> @math.Vec3 {
+  camera_target_for(tank.position, tank.turret_yaw)
 }
 
 ///|
@@ -59,6 +88,7 @@ fn all_enemies_destroyed() -> Bool {
 fn reset_game_state() -> Unit {
   tank.position = @math.Vec3::Vec3(0.0, 0.0, 3.5)
   tank.yaw = 0.0
+  tank.turret_yaw = 0.0
   tank.reload = 0.0
   tank.score = 0
   projectile.active = false

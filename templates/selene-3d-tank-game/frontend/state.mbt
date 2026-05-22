@@ -29,12 +29,31 @@ const RELOAD_SECONDS : Double = 0.35
 const ENEMY_HIT_RADIUS : Double = 1.45
 
 ///|
+const CAMERA_FOV_Y_DEGREES : Double = 55.0
+
+///|
+const CAMERA_DISTANCE : Double = 14.0
+
+///|
+const CAMERA_HEIGHT : Double = 5.2
+
+///|
+const CAMERA_LOOK_AHEAD : Double = 3.5
+
+///|
+const CAMERA_TARGET_HEIGHT : Double = 1.0
+
+///|
+const MOUSE_TURN_SENSITIVITY : Double = 0.006
+
+///|
 const UI_ZINDEX : Int = 1000
 
 ///|
 priv struct TankState {
   mut position : @math.Vec3
   mut yaw : Double
+  mut turret_yaw : Double
   mut reload : Double
   mut score : Int
 }
@@ -63,6 +82,7 @@ priv struct EnemyState {
 let tank : TankState = {
   position: @math.Vec3::Vec3(0.0, 0.0, 3.5),
   yaw: 0.0,
+  turret_yaw: 0.0,
   reload: 0.0,
   score: 0,
 }

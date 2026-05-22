@@ -79,12 +79,12 @@ fn fire_projectile() -> Unit {
   if tank.reload > 0.0 || projectile.active {
     return
   }
-  let forward = forward_from_yaw(tank.yaw)
+  let forward = forward_from_yaw(tank.turret_yaw)
   projectile.active = true
   projectile.position = tank.position +
     forward.scalar_mul(1.05) +
-    @math.Vec3::Vec3(0.0, 0.65, 0.0)
-  projectile.yaw = tank.yaw
+    @math.Vec3::Vec3(0.0, 1.12, 0.0)
+  projectile.yaw = tank.turret_yaw
   projectile.ttl = PROJECTILE_TTL
   tank.reload = RELOAD_SECONDS
 }
@@ -92,10 +92,10 @@ fn fire_projectile() -> Unit {
 ///|
 fn update_tank(dt : Double) -> Unit {
   if @inputs.is_pressed(KeyA) || @inputs.is_pressed(ArrowLeft) {
-    tank.yaw -= TANK_TURN_SPEED * dt
+    tank.yaw += TANK_TURN_SPEED * dt
   }
   if @inputs.is_pressed(KeyD) || @inputs.is_pressed(ArrowRight) {
-    tank.yaw += TANK_TURN_SPEED * dt
+    tank.yaw -= TANK_TURN_SPEED * dt
   }
   let forward = forward_from_yaw(tank.yaw)
   let drive = if @inputs.is_pressed(KeyW) || @inputs.is_pressed(ArrowUp) {
@@ -110,6 +110,14 @@ fn update_tank(dt : Double) -> Unit {
   )
   if tank.reload > 0.0 {
     tank.reload = clamp_double(tank.reload - dt, 0.0, RELOAD_SECONDS)
+  }
+}
+
+///|
+fn update_mouse_view() -> Unit {
+  let movement = @inputs.mouse_movement.movement
+  if movement[X] != 0.0 {
+    tank.turret_yaw = mouse_turn_yaw(tank.turret_yaw, movement[X])
   }
 }
 
@@ -172,7 +180,12 @@ fn input_system(_world : @ecs.World) -> Unit {
 fn update_system(_world : @ecs.World) -> Unit {
   let dt = @time.delta()
   update_tank(dt)
+  update_mouse_view()
+  if @inputs.is_mouse_pressed(Left) {
+    fire_projectile()
+  }
   update_projectile(dt)
+  sync_camera_transform()
   sync_tank_render()
   sync_projectile_render()
   sync_enemy_render()
