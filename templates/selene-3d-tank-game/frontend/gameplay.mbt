@@ -1,11 +1,11 @@
 ///|
-fn target_positions() -> Array[@math.Vec3] {
+fn enemy_specs() -> Array[(@math.Vec3, Double)] {
   [
-    @math.Vec3::Vec3(-4.6, 0.4, -4.8),
-    @math.Vec3::Vec3(0.0, 0.4, -5.6),
-    @math.Vec3::Vec3(4.6, 0.4, -4.8),
-    @math.Vec3::Vec3(-5.2, 0.4, 0.8),
-    @math.Vec3::Vec3(5.2, 0.4, 0.8),
+    (@math.Vec3::Vec3(-8.0, 0.0, -8.2), -0.55),
+    (@math.Vec3::Vec3(0.0, 0.0, -9.8), 0.0),
+    (@math.Vec3::Vec3(8.0, 0.0, -8.2), 0.55),
+    (@math.Vec3::Vec3(-9.2, 0.0, -0.5), -1.1),
+    (@math.Vec3::Vec3(9.2, 0.0, -0.5), 1.1),
   ]
 }
 
@@ -18,16 +18,59 @@ fn setup_static_scene() -> Unit {
     @math.Vec3::Vec3(0.0, -0.06, 0.0),
     cast_shadows=false,
   )
-  target_states.clear()
-  for position in target_positions() {
-    let entity = @entity.Entity::Entity()
+  let half = ARENA_SIZE * 0.5
+  set_mesh_entity(
+    @entity.Entity::Entity(),
+    wall_long_mesh.val.unwrap(),
+    wall_material.val.unwrap(),
+    @math.Vec3::Vec3(0.0, 0.68, -half),
+  )
+  set_mesh_entity(
+    @entity.Entity::Entity(),
+    wall_long_mesh.val.unwrap(),
+    wall_material.val.unwrap(),
+    @math.Vec3::Vec3(0.0, 0.68, half),
+  )
+  set_mesh_entity(
+    @entity.Entity::Entity(),
+    wall_side_mesh.val.unwrap(),
+    wall_material.val.unwrap(),
+    @math.Vec3::Vec3(-half, 0.68, 0.0),
+  )
+  set_mesh_entity(
+    @entity.Entity::Entity(),
+    wall_side_mesh.val.unwrap(),
+    wall_material.val.unwrap(),
+    @math.Vec3::Vec3(half, 0.68, 0.0),
+  )
+  for
+    position in [
+      @math.Vec3::Vec3(-5.4, 0.72, -3.0),
+      @math.Vec3::Vec3(5.4, 0.72, -3.0),
+      @math.Vec3::Vec3(0.0, 0.72, -5.2),
+      @math.Vec3::Vec3(-4.0, 0.72, 4.5),
+      @math.Vec3::Vec3(4.0, 0.72, 4.5),
+    ] {
     set_mesh_entity(
-      entity,
-      target_mesh.val.unwrap(),
-      target_material.val.unwrap(),
+      @entity.Entity::Entity(),
+      obstacle_block_mesh.val.unwrap(),
+      obstacle_material.val.unwrap(),
       position,
     )
-    target_states.push({ entity, position, active: true })
+  }
+  enemy_states.clear()
+  for spec in enemy_specs() {
+    let (position, yaw) = spec
+    enemy_states.push({
+      left_track_entity: @entity.Entity::Entity(),
+      right_track_entity: @entity.Entity::Entity(),
+      body_entity: @entity.Entity::Entity(),
+      turret_entity: @entity.Entity::Entity(),
+      barrel_entity: @entity.Entity::Entity(),
+      position,
+      yaw,
+      active: true,
+    })
   }
 }
 
@@ -88,11 +131,11 @@ fn update_projectile(dt : Double) -> Unit {
     projectile.active = false
     return
   }
-  for index in 0..<target_states.length() {
-    if target_states[index].active &&
-      distance_xz_squared(projectile.position, target_states[index].position) <=
-      TARGET_HIT_RADIUS * TARGET_HIT_RADIUS {
-      target_states[index].active = false
+  for index in 0..<enemy_states.length() {
+    if enemy_states[index].active &&
+      distance_xz_squared(projectile.position, enemy_states[index].position) <=
+      ENEMY_HIT_RADIUS * ENEMY_HIT_RADIUS {
+      enemy_states[index].active = false
       projectile.active = false
       tank.score += 1
       return
@@ -108,7 +151,7 @@ fn startup_system(_world : @ecs.World) -> Unit {
   reset_game_state()
   sync_tank_render()
   sync_projectile_render()
-  sync_target_render()
+  sync_enemy_render()
   sync_hud()
 }
 
@@ -132,7 +175,7 @@ fn update_system(_world : @ecs.World) -> Unit {
   update_projectile(dt)
   sync_tank_render()
   sync_projectile_render()
-  sync_target_render()
+  sync_enemy_render()
   sync_hud()
 }
 

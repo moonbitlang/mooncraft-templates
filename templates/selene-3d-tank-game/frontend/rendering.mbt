@@ -52,52 +52,107 @@ fn register_assets_once() -> Unit {
   }
   floor_mesh.val = Some(
     @render3d.register_mesh_asset(
-      @render3d.cube_mesh(@math.Vec3::Vec3(ARENA_SIZE, 0.12, ARENA_SIZE)),
+      @render3d.cube_mesh(@math.Vec3::Vec3(ARENA_SIZE, 0.16, ARENA_SIZE)),
+    ),
+  )
+  wall_long_mesh.val = Some(
+    @render3d.register_mesh_asset(
+      @render3d.cube_mesh(@math.Vec3::Vec3(ARENA_SIZE, 1.35, 0.42)),
+    ),
+  )
+  wall_side_mesh.val = Some(
+    @render3d.register_mesh_asset(
+      @render3d.cube_mesh(@math.Vec3::Vec3(0.42, 1.35, ARENA_SIZE)),
+    ),
+  )
+  obstacle_block_mesh.val = Some(
+    @render3d.register_mesh_asset(
+      @render3d.cube_mesh(@math.Vec3::Vec3(3.1, 1.45, 2.4)),
+    ),
+  )
+  tank_track_mesh.val = Some(
+    @render3d.register_mesh_asset(
+      @render3d.cube_mesh(@math.Vec3::Vec3(0.42, 0.52, 1.88)),
     ),
   )
   tank_body_mesh.val = Some(
     @render3d.register_mesh_asset(
-      @render3d.cube_mesh(@math.Vec3::Vec3(1.3, 0.45, 1.7)),
+      @render3d.cube_mesh(@math.Vec3::Vec3(1.42, 0.58, 1.72)),
     ),
   )
   tank_turret_mesh.val = Some(
     @render3d.register_mesh_asset(
-      @render3d.cube_mesh(@math.Vec3::Vec3(0.75, 0.38, 0.75)),
+      @render3d.cylinder_mesh(0.42, 0.52, 0.38, slices=16),
     ),
   )
   tank_barrel_mesh.val = Some(
     @render3d.register_mesh_asset(
-      @render3d.cube_mesh(@math.Vec3::Vec3(0.18, 0.16, 0.95)),
+      @render3d.cube_mesh(@math.Vec3::Vec3(0.16, 0.14, 1.12)),
     ),
   )
   projectile_mesh.val = Some(
     @render3d.register_mesh_asset(@render3d.sphere_mesh(0.16)),
   )
-  target_mesh.val = Some(
-    @render3d.register_mesh_asset(
-      @render3d.cube_mesh(@math.Vec3::Vec3(0.8, 0.8, 0.8)),
-    ),
-  )
 
   floor_material.val = Some(
     @render3d.register_material_asset({
       ..@render3d.default_standard_material3d(),
-      base_color: color_rgba(33U, 50U, 64U, 1.0),
+      base_color: color_rgba(72U, 92U, 61U, 1.0),
       roughness: 0.96,
+    }),
+  )
+  wall_material.val = Some(
+    @render3d.register_material_asset({
+      ..@render3d.default_standard_material3d(),
+      base_color: color_rgba(58U, 70U, 45U, 1.0),
+      roughness: 0.9,
+    }),
+  )
+  obstacle_material.val = Some(
+    @render3d.register_material_asset({
+      ..@render3d.default_standard_material3d(),
+      base_color: color_rgba(122U, 107U, 80U, 1.0),
+      roughness: 0.86,
+    }),
+  )
+  track_material.val = Some(
+    @render3d.register_material_asset({
+      ..@render3d.default_standard_material3d(),
+      base_color: color_rgba(22U, 24U, 27U, 1.0),
+      roughness: 0.62,
+      metallic: 0.25,
     }),
   )
   tank_material.val = Some(
     @render3d.register_material_asset({
       ..@render3d.default_standard_material3d(),
-      base_color: color_rgba(44U, 164U, 118U, 1.0),
-      roughness: 0.72,
+      base_color: color_rgba(43U, 95U, 168U, 1.0),
+      roughness: 0.58,
+      metallic: 0.18,
     }),
   )
   turret_material.val = Some(
     @render3d.register_material_asset({
       ..@render3d.default_standard_material3d(),
-      base_color: color_rgba(27U, 112U, 88U, 1.0),
-      roughness: 0.62,
+      base_color: color_rgba(30U, 70U, 128U, 1.0),
+      roughness: 0.5,
+      metallic: 0.22,
+    }),
+  )
+  enemy_material.val = Some(
+    @render3d.register_material_asset({
+      ..@render3d.default_standard_material3d(),
+      base_color: color_rgba(168U, 58U, 42U, 1.0),
+      roughness: 0.58,
+      metallic: 0.18,
+    }),
+  )
+  enemy_turret_material.val = Some(
+    @render3d.register_material_asset({
+      ..@render3d.default_standard_material3d(),
+      base_color: color_rgba(122U, 40U, 24U, 1.0),
+      roughness: 0.5,
+      metallic: 0.22,
     }),
   )
   projectile_material.val = Some(
@@ -106,13 +161,6 @@ fn register_assets_once() -> Unit {
       base_color: color_rgba(255U, 219U, 92U, 1.0),
       emissive_color: color_rgba(60U, 36U, 4U, 1.0),
       roughness: 0.18,
-    }),
-  )
-  target_material.val = Some(
-    @render3d.register_material_asset({
-      ..@render3d.default_standard_material3d(),
-      base_color: color_rgba(237U, 85U, 101U, 1.0),
-      roughness: 0.45,
     }),
   )
 }
@@ -166,8 +214,8 @@ fn set_text_entity(entity : @entity.Entity, content : String) -> Unit {
 fn setup_camera_and_lighting() -> Unit {
   ensure_entity_alive(camera_entity)
   ensure_entity_alive(light_entity)
-  let camera_position = @math.Vec3::Vec3(0.0, 8.2, 9.5)
-  let camera_target = @math.Vec3::Vec3(0.0, 0.0, -0.6)
+  let camera_position = @math.Vec3::Vec3(0.0, 6.2, 13.5)
+  let camera_target = @math.Vec3::Vec3(0.0, 0.9, -2.2)
   @camera3d.cameras3d().set(camera_entity, {
     ..@camera3d.Camera3DComponent::default(),
     fov_y: 55.0,
@@ -200,28 +248,78 @@ fn setup_camera_and_lighting() -> Unit {
 
 ///|
 fn sync_tank_render() -> Unit {
-  let rotation = yaw_rotation(tank.yaw)
-  let forward = forward_from_yaw(tank.yaw)
-  set_mesh_entity(
+  sync_tank_parts(
+    tank_left_track_entity,
+    tank_right_track_entity,
     tank_body_entity,
-    tank_body_mesh.val.unwrap(),
-    tank_material.val.unwrap(),
-    tank.position + @math.Vec3::Vec3(0.0, 0.28, 0.0),
-    rotation~,
-  )
-  set_mesh_entity(
     tank_turret_entity,
-    tank_turret_mesh.val.unwrap(),
+    tank_barrel_entity,
+    tank.position,
+    tank.yaw,
+    tank.yaw,
+    tank_material.val.unwrap(),
     turret_material.val.unwrap(),
-    tank.position + @math.Vec3::Vec3(0.0, 0.65, 0.0),
-    rotation~,
+  )
+}
+
+///|
+fn sync_tank_parts(
+  left_track : @entity.Entity,
+  right_track : @entity.Entity,
+  body : @entity.Entity,
+  turret : @entity.Entity,
+  barrel : @entity.Entity,
+  position : @math.Vec3,
+  body_yaw : Double,
+  turret_yaw : Double,
+  body_material : @render3d.MaterialHandle,
+  turret_material : @render3d.MaterialHandle,
+) -> Unit {
+  let body_rotation = yaw_rotation(body_yaw)
+  let turret_rotation = yaw_rotation(turret_yaw)
+  let track_y = @math.Vec3::Vec3(0.0, 0.32, 0.0)
+  let body_y = @math.Vec3::Vec3(0.0, 0.72, 0.0)
+  let turret_y = @math.Vec3::Vec3(0.0, 1.15, 0.0)
+  set_mesh_entity(
+    left_track,
+    tank_track_mesh.val.unwrap(),
+    track_material.val.unwrap(),
+    position +
+    offset_from_yaw(body_yaw, @math.Vec3::Vec3(-0.74, 0.0, 0.0)) +
+    track_y,
+    rotation=body_rotation,
   )
   set_mesh_entity(
-    tank_barrel_entity,
+    right_track,
+    tank_track_mesh.val.unwrap(),
+    track_material.val.unwrap(),
+    position +
+    offset_from_yaw(body_yaw, @math.Vec3::Vec3(0.74, 0.0, 0.0)) +
+    track_y,
+    rotation=body_rotation,
+  )
+  set_mesh_entity(
+    body,
+    tank_body_mesh.val.unwrap(),
+    body_material,
+    position + body_y,
+    rotation=body_rotation,
+  )
+  set_mesh_entity(
+    turret,
+    tank_turret_mesh.val.unwrap(),
+    turret_material,
+    position + turret_y,
+    rotation=turret_rotation,
+  )
+  set_mesh_entity(
+    barrel,
     tank_barrel_mesh.val.unwrap(),
-    turret_material.val.unwrap(),
-    tank.position + forward.scalar_mul(0.58) + @math.Vec3::Vec3(0.0, 0.66, 0.0),
-    rotation~,
+    turret_material,
+    position +
+    offset_from_yaw(turret_yaw, @math.Vec3::Vec3(0.0, 0.0, -0.82)) +
+    @math.Vec3::Vec3(0.0, 1.16, 0.0),
+    rotation=turret_rotation,
   )
 }
 
@@ -242,16 +340,41 @@ fn sync_projectile_render() -> Unit {
 }
 
 ///|
-fn sync_target_render() -> Unit {
-  for target in target_states {
-    set_entity_visibility(target.entity, target.active)
+fn set_enemy_visibility(enemy : EnemyState, visible : Bool) -> Unit {
+  set_entity_visibility(enemy.left_track_entity, visible)
+  set_entity_visibility(enemy.right_track_entity, visible)
+  set_entity_visibility(enemy.body_entity, visible)
+  set_entity_visibility(enemy.turret_entity, visible)
+  set_entity_visibility(enemy.barrel_entity, visible)
+}
+
+///|
+fn sync_enemy_render() -> Unit {
+  for enemy in enemy_states {
+    if enemy.active {
+      let turret_yaw = yaw_to(enemy.position, tank.position)
+      sync_tank_parts(
+        enemy.left_track_entity,
+        enemy.right_track_entity,
+        enemy.body_entity,
+        enemy.turret_entity,
+        enemy.barrel_entity,
+        enemy.position,
+        enemy.yaw,
+        turret_yaw,
+        enemy_material.val.unwrap(),
+        enemy_turret_material.val.unwrap(),
+      )
+    } else {
+      set_enemy_visibility(enemy, false)
+    }
   }
 }
 
 ///|
 fn sync_hud() -> Unit {
-  let status = if all_targets_destroyed() {
-    "All targets down. Press R to reset."
+  let status = if all_enemies_destroyed() {
+    "All enemy tanks down. Press R to reset."
   } else {
     "WASD/Arrows drive · Space fires · R resets"
   }

@@ -8,7 +8,7 @@ const VIEWPORT_HEIGHT : Double = 640.0
 const FPS : UInt = 60
 
 ///|
-const ARENA_SIZE : Double = 14.0
+const ARENA_SIZE : Double = 26.0
 
 ///|
 const TANK_SPEED : Double = 4.2
@@ -26,7 +26,7 @@ const PROJECTILE_TTL : Double = 1.8
 const RELOAD_SECONDS : Double = 0.35
 
 ///|
-const TARGET_HIT_RADIUS : Double = 0.85
+const ENEMY_HIT_RADIUS : Double = 1.45
 
 ///|
 const UI_ZINDEX : Int = 1000
@@ -48,9 +48,14 @@ priv struct ProjectileState {
 }
 
 ///|
-priv struct TargetState {
-  entity : @entity.Entity
+priv struct EnemyState {
+  left_track_entity : @entity.Entity
+  right_track_entity : @entity.Entity
+  body_entity : @entity.Entity
+  turret_entity : @entity.Entity
+  barrel_entity : @entity.Entity
   position : @math.Vec3
+  yaw : Double
   mut active : Bool
 }
 
@@ -71,7 +76,7 @@ let projectile : ProjectileState = {
 }
 
 ///|
-let target_states : Array[TargetState] = []
+let enemy_states : Array[EnemyState] = []
 
 ///|
 let camera_entity : @entity.Entity = @entity.Entity::Entity()
@@ -81,6 +86,12 @@ let light_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
 let tank_body_entity : @entity.Entity = @entity.Entity::Entity()
+
+///|
+let tank_left_track_entity : @entity.Entity = @entity.Entity::Entity()
+
+///|
+let tank_right_track_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
 let tank_turret_entity : @entity.Entity = @entity.Entity::Entity()
@@ -98,6 +109,18 @@ let hud_entity : @entity.Entity = @entity.Entity::Entity()
 let floor_mesh : Ref[@render3d.MeshHandle?] = { val: None }
 
 ///|
+let wall_long_mesh : Ref[@render3d.MeshHandle?] = { val: None }
+
+///|
+let wall_side_mesh : Ref[@render3d.MeshHandle?] = { val: None }
+
+///|
+let obstacle_block_mesh : Ref[@render3d.MeshHandle?] = { val: None }
+
+///|
+let tank_track_mesh : Ref[@render3d.MeshHandle?] = { val: None }
+
+///|
 let tank_body_mesh : Ref[@render3d.MeshHandle?] = { val: None }
 
 ///|
@@ -110,10 +133,16 @@ let tank_barrel_mesh : Ref[@render3d.MeshHandle?] = { val: None }
 let projectile_mesh : Ref[@render3d.MeshHandle?] = { val: None }
 
 ///|
-let target_mesh : Ref[@render3d.MeshHandle?] = { val: None }
+let floor_material : Ref[@render3d.MaterialHandle?] = { val: None }
 
 ///|
-let floor_material : Ref[@render3d.MaterialHandle?] = { val: None }
+let wall_material : Ref[@render3d.MaterialHandle?] = { val: None }
+
+///|
+let obstacle_material : Ref[@render3d.MaterialHandle?] = { val: None }
+
+///|
+let track_material : Ref[@render3d.MaterialHandle?] = { val: None }
 
 ///|
 let tank_material : Ref[@render3d.MaterialHandle?] = { val: None }
@@ -122,7 +151,10 @@ let tank_material : Ref[@render3d.MaterialHandle?] = { val: None }
 let turret_material : Ref[@render3d.MaterialHandle?] = { val: None }
 
 ///|
-let projectile_material : Ref[@render3d.MaterialHandle?] = { val: None }
+let enemy_material : Ref[@render3d.MaterialHandle?] = { val: None }
 
 ///|
-let target_material : Ref[@render3d.MaterialHandle?] = { val: None }
+let enemy_turret_material : Ref[@render3d.MaterialHandle?] = { val: None }
+
+///|
+let projectile_material : Ref[@render3d.MaterialHandle?] = { val: None }

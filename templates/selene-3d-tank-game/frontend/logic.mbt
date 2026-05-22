@@ -19,6 +19,16 @@ fn forward_from_yaw(yaw : Double) -> @math.Vec3 {
 }
 
 ///|
+fn yaw_to(from : @math.Vec3, to : @math.Vec3) -> Double {
+  @cmath.atan2(to.x - from.x, -(to.z - from.z))
+}
+
+///|
+fn offset_from_yaw(yaw : Double, offset : @math.Vec3) -> @math.Vec3 {
+  yaw_rotation(yaw).rotate_vec3(offset)
+}
+
+///|
 fn clamp_to_arena(position : @math.Vec3) -> @math.Vec3 {
   let half = ARENA_SIZE * 0.5 - 0.8
   @math.Vec3::Vec3(
@@ -36,9 +46,9 @@ fn distance_xz_squared(a : @math.Vec3, b : @math.Vec3) -> Double {
 }
 
 ///|
-fn all_targets_destroyed() -> Bool {
-  for target in target_states {
-    if target.active {
+fn all_enemies_destroyed() -> Bool {
+  for enemy in enemy_states {
+    if enemy.active {
       return false
     }
   }
@@ -53,7 +63,7 @@ fn reset_game_state() -> Unit {
   tank.score = 0
   projectile.active = false
   projectile.ttl = 0.0
-  for index in 0..<target_states.length() {
-    target_states[index].active = true
+  for index in 0..<enemy_states.length() {
+    enemy_states[index].active = true
   }
 }
