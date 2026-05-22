@@ -14,14 +14,6 @@ test "yaw to a point on the right matches Selene rotation direction" {
 }
 
 ///|
-test "arena clamp keeps tank inside playable area" {
-  let clamped = clamp_to_arena(@math.Vec3::Vec3(100.0, 0.0, -100.0))
-  let half = ARENA_SIZE * 0.5 - 0.8
-  assert_eq(clamped.x, half)
-  assert_eq(clamped.z, -half)
-}
-
-///|
 test "camera follows behind turret yaw" {
   let position = @math.Vec3::Vec3(0.0, 0.0, 3.5)
   let camera = camera_position_for(position, 0.0)
@@ -32,8 +24,90 @@ test "camera follows behind turret yaw" {
 }
 
 ///|
+fn active_projectile_count() -> Int {
+  let mut count = 0
+  for projectile in projectiles {
+    if projectile.active {
+      count += 1
+    }
+  }
+  count
+}
+
+///|
+fn enemy_count() -> Int {
+  let mut count = 0
+  for enemy in enemy_states {
+    if enemy.active {
+      count += 1
+    }
+  }
+  count
+}
+
+///|
+fn reset_scene_for_test() -> Unit {
+  enemy_states.clear()
+  for spec in enemy_specs() {
+    let (position, yaw) = spec
+    enemy_states.push({
+      left_track_entity: @entity.Entity::Entity(),
+      right_track_entity: @entity.Entity::Entity(),
+      body_entity: @entity.Entity::Entity(),
+      turret_entity: @entity.Entity::Entity(),
+      barrel_entity: @entity.Entity::Entity(),
+      position,
+      yaw,
+      turret_yaw: yaw,
+      hp: 2,
+      cooldown: ENEMY_RELOAD_SECONDS,
+      active: true,
+    })
+  }
+  projectiles.clear()
+  reset_game_state()
+}
+
+///|
 test "positive mouse movement turns view to the right" {
   let yaw = mouse_turn_yaw(0.0, 10.0)
   assert_true(yaw < 0.0)
   assert_true(forward_from_yaw(yaw).x > 0.0)
+}
+
+///|
+test "obstacle and arena blockers reject occupied positions" {
+  let center_obstacle = @math.Vec3::Vec3(0.0, 0.0, 0.0)
+  let outside_arena = @math.Vec3::Vec3(ARENA_SIZE + 1.0, 0.0, 0.0)
+  let open_ground = @math.Vec3::Vec3(30.0, 0.0, 30.0)
+  assert_true(blocked_by_obstacles(center_obstacle, PLAYER_HIT_RADIUS))
+  assert_true(blocked_by_arena(outside_arena, PLAYER_HIT_RADIUS))
+  assert_false(blocked_by_obstacles(open_ground, PLAYER_HIT_RADIUS))
+  assert_false(blocked_by_arena(open_ground, PLAYER_HIT_RADIUS))
+}
+
+///|
+test "enemy ai moves, tracks player, and fires projectiles" {
+  reset_scene_for_test()
+  enemy_states[0].position = @math.Vec3::Vec3(4.0, 0.0, 4.0)
+  enemy_states[0].yaw = 0.0
+  enemy_states[0].turret_yaw = 0.0
+  enemy_states[0].cooldown = 0.0
+  let before = enemy_states[0].position
+  update_enemies(0.1)
+  assert_true(distance_xz_squared(enemy_states[0].position, before) > 0.0)
+  assert_true(enemy_states[0].turret_yaw != 0.0)
+  assert_eq(active_projectile_count(), 1)
+}
+
+///|
+test "player projectile damages and destroys enemy tanks" {
+  reset_scene_for_test()
+  enemy_states[0].position = @math.Vec3::Vec3(0.0, 0.0, 10.0)
+  enemy_states[0].hp = 1
+  spawn_projectile(@math.Vec3::Vec3(0.0, 1.45, 12.0), 0.0, true, PROJECTILE_TTL)
+  update_projectiles(0.08)
+  assert_false(enemy_states[0].active)
+  assert_eq(enemy_count(), 4)
+  assert_eq(tank.score, 100)
 }

@@ -52,23 +52,23 @@ fn register_assets_once() -> Unit {
   }
   floor_mesh.val = Some(
     @render3d.register_mesh_asset(
-      @render3d.cube_mesh(@math.Vec3::Vec3(ARENA_SIZE, 0.16, ARENA_SIZE)),
+      @render3d.cube_mesh(
+        @math.Vec3::Vec3(ARENA_SIZE * 2.0, 0.16, ARENA_SIZE * 2.0),
+      ),
     ),
   )
   wall_long_mesh.val = Some(
     @render3d.register_mesh_asset(
-      @render3d.cube_mesh(@math.Vec3::Vec3(ARENA_SIZE, 1.35, 0.42)),
+      @render3d.cube_mesh(@math.Vec3::Vec3(ARENA_SIZE * 2.0, 1.35, 0.42)),
     ),
   )
   wall_side_mesh.val = Some(
     @render3d.register_mesh_asset(
-      @render3d.cube_mesh(@math.Vec3::Vec3(0.42, 1.35, ARENA_SIZE)),
+      @render3d.cube_mesh(@math.Vec3::Vec3(0.42, 1.35, ARENA_SIZE * 2.0)),
     ),
   )
   obstacle_block_mesh.val = Some(
-    @render3d.register_mesh_asset(
-      @render3d.cube_mesh(@math.Vec3::Vec3(3.1, 1.45, 2.4)),
-    ),
+    @render3d.register_mesh_asset(@render3d.cube_mesh(@math.Vec3::one())),
   )
   tank_track_mesh.val = Some(
     @render3d.register_mesh_asset(
@@ -172,13 +172,14 @@ fn set_mesh_entity(
   material : @render3d.MaterialHandle,
   translation : @math.Vec3,
   rotation? : @math.Quat = @math.Quat::identity(),
+  scale? : @math.Vec3 = @math.Vec3::one(),
   cast_shadows? : Bool = true,
   receive_shadows? : Bool = true,
 ) -> Unit {
   ensure_entity_alive(entity)
   @transform.transforms().set(
     entity,
-    world_transform(translation, rotation, @math.Vec3::one()),
+    world_transform(translation, rotation, scale),
   )
   @render3d.mesh3d_renderers().set(entity, {
     visible: true,
@@ -194,7 +195,7 @@ fn set_mesh_entity(
 fn set_text_entity(entity : @entity.Entity, content : String) -> Unit {
   ensure_entity_alive(entity)
   @ui.texts().set(entity, @ui.Text::Text(content))
-  @ui.text_fonts().set(entity, @ui.TextFont::from_css("24px ui-sans-serif"))
+  @ui.text_fonts().set(entity, @ui.TextFont::from_css("40px ui-sans-serif"))
   @ui.text_colors().set(entity, @ui.TextColor::from_css("rgb(238,244,252)"))
   @ui.text_layouts().set(
     entity,
@@ -203,7 +204,7 @@ fn set_text_entity(entity : @entity.Entity, content : String) -> Unit {
   @text2d.text2ds().set(entity, @text2d.Text2d::Text2d())
   @text2d.text_anchors().set(entity, @sprite.Anchor(@math.Vec2(-0.5, 0.5)))
   @transform.transforms().set(entity, {
-    translation: @math.Vec3::Vec3(18.0, 18.0, UI_ZINDEX.to_double()),
+    translation: @math.Vec3::Vec3(40.0, 40.0, UI_ZINDEX.to_double()),
     rotation: @math.Quat::identity(),
     scale: @math.Vec3::one(),
   })
@@ -329,17 +330,19 @@ fn sync_tank_parts(
 
 ///|
 fn sync_projectile_render() -> Unit {
-  if projectile.active {
-    set_mesh_entity(
-      projectile_entity,
-      projectile_mesh.val.unwrap(),
-      projectile_material.val.unwrap(),
-      projectile.position,
-      cast_shadows=false,
-      receive_shadows=false,
-    )
-  } else {
-    set_entity_visibility(projectile_entity, false)
+  for projectile in projectiles {
+    if projectile.active {
+      set_mesh_entity(
+        projectile.entity,
+        projectile_mesh.val.unwrap(),
+        projectile_material.val.unwrap(),
+        projectile.position,
+        cast_shadows=false,
+        receive_shadows=false,
+      )
+    } else {
+      set_entity_visibility(projectile.entity, false)
+    }
   }
 }
 
@@ -356,7 +359,6 @@ fn set_enemy_visibility(enemy : EnemyState, visible : Bool) -> Unit {
 fn sync_enemy_render() -> Unit {
   for enemy in enemy_states {
     if enemy.active {
-      let turret_yaw = yaw_to(enemy.position, tank.position)
       sync_tank_parts(
         enemy.left_track_entity,
         enemy.right_track_entity,
@@ -365,7 +367,7 @@ fn sync_enemy_render() -> Unit {
         enemy.barrel_entity,
         enemy.position,
         enemy.yaw,
-        turret_yaw,
+        enemy.turret_yaw,
         enemy_material.val.unwrap(),
         enemy_turret_material.val.unwrap(),
       )
@@ -377,10 +379,15 @@ fn sync_enemy_render() -> Unit {
 
 ///|
 fn sync_hud() -> Unit {
-  let status = if all_enemies_destroyed() {
+  let status = if tank.status == Victory {
     "All enemy tanks down. Press R to reset."
+  } else if tank.status == GameOver {
+    "Tank destroyed. Press R to reset."
   } else {
     "WASD/Arrows drive · Mouse turns view · Click/Space fires · R resets"
   }
-  set_text_entity(hud_entity, "3D Tank · Score \{tank.score}\n\{status}")
+  set_text_entity(
+    hud_entity,
+    "3D Tank · HP \{tank.hp} · Score \{tank.score}\n\{status}",
+  )
 }
