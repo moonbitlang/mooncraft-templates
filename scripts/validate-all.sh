@@ -34,6 +34,9 @@ while IFS="$(printf '\t')" read -r template_dir smoke_paths artifacts; do
     moon test
     if [ -d frontend ]; then
       if grep -q 'supported_targets = "js"' frontend/moon.pkg; then
+        if find frontend \( -name '*_test.mbt' -o -name '*_wbtest.mbt' \) | grep -q .; then
+          moon test --target js frontend
+        fi
         moon build --target js frontend
       fi
       if grep -q 'supported_targets = "wasm"' frontend/moon.pkg; then

@@ -289,6 +289,62 @@
           ]
         }
       }
+    },
+    {
+      "id": "selene-3d-tank-game",
+      "name": "Selene 3D Tank Game",
+      "path": "templates/selene-3d-tank-game",
+      "description": "A browser 3D game template using Selene with the selene_webgpu backend. The JavaScript frontend owns a small tank arena with camera, lighting, keyboard controls, and projectile gameplay, while the native async/http backend only serves the generated game bundle and browser shell.",
+      "category": "game",
+      "useCases": [
+        "web",
+        "games",
+        "webgpu",
+        "3d",
+        "interactive"
+      ],
+      "architecture": {
+        "shape": "frontend/backend",
+        "frontend": {
+          "target": "js",
+          "framework": "selene-webgpu"
+        },
+        "backend": {
+          "target": "native",
+          "framework": "async-http"
+        }
+      },
+      "runtime": {
+        "previewScript": "mooncraft-preview.sh",
+        "defaultPort": 4300,
+        "host": "0.0.0.0",
+        "serves": [
+          "/",
+          "/api/health",
+          "/frontend.js"
+        ],
+        "artifacts": [
+          "preview-dist/index.html",
+          "preview-dist/frontend.js"
+        ]
+      },
+      "validation": {
+        "commands": [
+          "moon fmt --check",
+          "moon check",
+          "moon build",
+          "moon test",
+          "moon test --target js frontend",
+          "moon build --target js frontend"
+        ],
+        "previewSmoke": {
+          "paths": [
+            "/",
+            "/api/health",
+            "/frontend.js"
+          ]
+        }
+      }
     }
   ]
 }
