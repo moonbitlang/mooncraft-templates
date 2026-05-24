@@ -18,8 +18,9 @@ The script builds the frontend, copies the browser assets into `preview-dist/`, 
 - `S` / `ArrowDown`: reverse
 - `A` / `ArrowLeft`: turn left
 - `D` / `ArrowRight`: turn right
-- Mouse move: turn the tank view and turret
+- Click arena: lock the mouse pointer
+- Mouse move: turn the tank view and turret while locked
 - Mouse left button: fire
 - `Space` / `Enter`: fire without mouse
 - `R`: reset match
-- `Escape`: exit
+- `Escape`: release the mouse pointer

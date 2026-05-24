@@ -490,8 +490,10 @@ fn sync_hud() -> Unit {
     "All enemy tanks down. Press R to reset."
   } else if tank.status == GameOver {
     "Tank destroyed. Press R to reset."
+  } else if !@host.is_pointer_locked() {
+    "Click the arena to lock mouse · WASD/Arrows drive · Esc releases"
   } else {
-    "WASD/Arrows drive · Mouse turns view · Click/Space fires · R resets"
+    "Mouse locked · WASD/Arrows drive · Click/Space fires · Esc releases · R resets"
   }
   set_text_entity(
     hud_entity,

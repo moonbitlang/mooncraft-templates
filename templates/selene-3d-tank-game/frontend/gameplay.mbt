@@ -331,18 +331,6 @@ fn handle_runtime_inputs() -> Unit {
 }
 
 ///|
-fn should_exit() -> Bool {
-  @inputs.is_just_pressed(Escape)
-}
-
-///|
-fn exit_if_requested() -> Unit {
-  if should_exit() {
-    @system.exit()
-  }
-}
-
-///|
 fn run_frame(dt : Double) -> Unit {
   update_tank(dt)
   update_mouse_view()
@@ -375,7 +363,7 @@ fn startup_system(_world : @ecs.World) -> Unit {
 
 ///|
 fn input_system(_world : @ecs.World) -> Unit {
-  exit_if_requested()
+  ()
 }
 
 ///|
