@@ -52,15 +52,22 @@ fn setup_static_scene() -> Unit {
       scale=obstacle.size,
     )
   }
+  configure_tank_render_rig(
+    tank_player_rig(),
+    tank_material.val.unwrap(),
+    turret_material.val.unwrap(),
+  )
   enemy_states.clear()
   for spec in enemy_specs() {
     let (position, yaw) = spec
+    let rig = spawn_tank_render_rig()
+    configure_tank_render_rig(
+      rig,
+      enemy_material.val.unwrap(),
+      enemy_turret_material.val.unwrap(),
+    )
     enemy_states.push({
-      left_track_entity: @entity.Entity::Entity(),
-      right_track_entity: @entity.Entity::Entity(),
-      body_entity: @entity.Entity::Entity(),
-      turret_entity: @entity.Entity::Entity(),
-      barrel_entity: @entity.Entity::Entity(),
+      rig,
       position,
       yaw,
       turret_yaw: yaw,

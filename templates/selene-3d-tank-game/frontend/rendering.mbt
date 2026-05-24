@@ -90,6 +90,31 @@ fn register_assets_once() -> Unit {
       @render3d.cube_mesh(@math.Vec3::Vec3(0.16, 0.14, 1.12)),
     ),
   )
+  tank_deck_mesh.val = Some(
+    @render3d.register_mesh_asset(
+      @render3d.cube_mesh(@math.Vec3::Vec3(1.04, 0.2, 1.0)),
+    ),
+  )
+  tank_armor_mesh.val = Some(
+    @render3d.register_mesh_asset(
+      @render3d.cube_mesh(@math.Vec3::Vec3(1.58, 0.34, 0.18)),
+    ),
+  )
+  tank_hatch_mesh.val = Some(
+    @render3d.register_mesh_asset(
+      @render3d.cylinder_mesh(0.22, 0.12, 0.12, slices=16),
+    ),
+  )
+  tank_muzzle_mesh.val = Some(
+    @render3d.register_mesh_asset(
+      @render3d.cube_mesh(@math.Vec3::Vec3(0.28, 0.22, 0.22)),
+    ),
+  )
+  tank_wheel_mesh.val = Some(
+    @render3d.register_mesh_asset(
+      @render3d.cube_mesh(@math.Vec3::Vec3(0.18, 0.3, 0.26)),
+    ),
+  )
   projectile_mesh.val = Some(
     @render3d.register_mesh_asset(@render3d.sphere_mesh(0.16)),
   )
@@ -192,6 +217,170 @@ fn set_mesh_entity(
 }
 
 ///|
+fn set_local_transform(
+  entity : @entity.Entity,
+  translation : @math.Vec3,
+  rotation? : @math.Quat = @math.Quat::identity(),
+  scale? : @math.Vec3 = @math.Vec3::one(),
+) -> Unit {
+  ensure_entity_alive(entity)
+  @transform.transforms().set(
+    entity,
+    world_transform(translation, rotation, scale),
+  )
+}
+
+///|
+fn spawn_tank_render_rig() -> TankRenderRig {
+  let root = @entity.Entity::Entity()
+  let turret_root = root.spawn_child()
+  {
+    root_entity: root,
+    left_track_entity: root.spawn_child(),
+    right_track_entity: root.spawn_child(),
+    body_entity: root.spawn_child(),
+    deck_entity: root.spawn_child(),
+    front_armor_entity: root.spawn_child(),
+    rear_armor_entity: root.spawn_child(),
+    turret_root_entity: turret_root,
+    turret_entity: turret_root.spawn_child(),
+    barrel_entity: turret_root.spawn_child(),
+    hatch_entity: turret_root.spawn_child(),
+    muzzle_entity: turret_root.spawn_child(),
+    left_wheel_entities: [
+      root.spawn_child(),
+      root.spawn_child(),
+      root.spawn_child(),
+    ],
+    right_wheel_entities: [
+      root.spawn_child(),
+      root.spawn_child(),
+      root.spawn_child(),
+    ],
+  }
+}
+
+///|
+fn tank_player_rig() -> TankRenderRig {
+  match player_tank_rig.val {
+    Some(rig) => rig
+    None => {
+      let rig = spawn_tank_render_rig()
+      player_tank_rig.val = Some(rig)
+      rig
+    }
+  }
+}
+
+///|
+fn configure_tank_render_rig(
+  rig : TankRenderRig,
+  body_material : @render3d.MaterialHandle,
+  turret_material : @render3d.MaterialHandle,
+) -> Unit {
+  set_mesh_entity(
+    rig.left_track_entity,
+    tank_track_mesh.val.unwrap(),
+    track_material.val.unwrap(),
+    @math.Vec3::Vec3(-0.74, 0.32, 0.0),
+  )
+  set_mesh_entity(
+    rig.right_track_entity,
+    tank_track_mesh.val.unwrap(),
+    track_material.val.unwrap(),
+    @math.Vec3::Vec3(0.74, 0.32, 0.0),
+  )
+  set_mesh_entity(
+    rig.body_entity,
+    tank_body_mesh.val.unwrap(),
+    body_material,
+    @math.Vec3::Vec3(0.0, 0.72, 0.0),
+  )
+  set_mesh_entity(
+    rig.deck_entity,
+    tank_deck_mesh.val.unwrap(),
+    body_material,
+    @math.Vec3::Vec3(0.0, 1.08, 0.12),
+  )
+  set_mesh_entity(
+    rig.front_armor_entity,
+    tank_armor_mesh.val.unwrap(),
+    body_material,
+    @math.Vec3::Vec3(0.0, 0.78, -0.96),
+  )
+  set_mesh_entity(
+    rig.rear_armor_entity,
+    tank_armor_mesh.val.unwrap(),
+    body_material,
+    @math.Vec3::Vec3(0.0, 0.78, 0.96),
+  )
+  set_mesh_entity(
+    rig.turret_entity,
+    tank_turret_mesh.val.unwrap(),
+    turret_material,
+    @math.Vec3::zero(),
+  )
+  set_mesh_entity(
+    rig.barrel_entity,
+    tank_barrel_mesh.val.unwrap(),
+    turret_material,
+    @math.Vec3::Vec3(0.0, 0.01, -0.82),
+  )
+  set_mesh_entity(
+    rig.hatch_entity,
+    tank_hatch_mesh.val.unwrap(),
+    turret_material,
+    @math.Vec3::Vec3(0.0, 0.34, 0.06),
+  )
+  set_mesh_entity(
+    rig.muzzle_entity,
+    tank_muzzle_mesh.val.unwrap(),
+    turret_material,
+    @math.Vec3::Vec3(0.0, 0.01, -1.42),
+  )
+  for index in 0..<rig.left_wheel_entities.length() {
+    set_mesh_entity(
+      rig.left_wheel_entities[index],
+      tank_wheel_mesh.val.unwrap(),
+      track_material.val.unwrap(),
+      @math.Vec3::Vec3(-0.98, 0.34, -0.58 + index.to_double() * 0.58),
+    )
+    set_mesh_entity(
+      rig.right_wheel_entities[index],
+      tank_wheel_mesh.val.unwrap(),
+      track_material.val.unwrap(),
+      @math.Vec3::Vec3(0.98, 0.34, -0.58 + index.to_double() * 0.58),
+    )
+  }
+  set_local_transform(rig.turret_root_entity, @math.Vec3::Vec3(0.0, 1.15, 0.0))
+}
+
+///|
+fn set_tank_rig_visibility(rig : TankRenderRig, visible : Bool) -> Unit {
+  set_entity_visibility(rig.root_entity, visible)
+}
+
+///|
+fn sync_tank_rig_transform(
+  rig : TankRenderRig,
+  position : @math.Vec3,
+  body_yaw : Double,
+  turret_yaw : Double,
+) -> Unit {
+  set_local_transform(
+    rig.root_entity,
+    position,
+    rotation=yaw_rotation(body_yaw),
+  )
+  set_local_transform(
+    rig.turret_root_entity,
+    @math.Vec3::Vec3(0.0, 1.15, 0.0),
+    rotation=yaw_rotation(turret_local_yaw(body_yaw, turret_yaw)),
+  )
+  set_tank_rig_visibility(rig, true)
+}
+
+///|
 fn set_text_entity(entity : @entity.Entity, content : String) -> Unit {
   ensure_entity_alive(entity)
   @ui.texts().set(entity, @ui.Text::Text(content))
@@ -253,78 +442,11 @@ fn sync_camera_transform() -> Unit {
 
 ///|
 fn sync_tank_render() -> Unit {
-  sync_tank_parts(
-    tank_left_track_entity,
-    tank_right_track_entity,
-    tank_body_entity,
-    tank_turret_entity,
-    tank_barrel_entity,
+  sync_tank_rig_transform(
+    tank_player_rig(),
     tank.position,
     tank.yaw,
     tank.turret_yaw,
-    tank_material.val.unwrap(),
-    turret_material.val.unwrap(),
-  )
-}
-
-///|
-fn sync_tank_parts(
-  left_track : @entity.Entity,
-  right_track : @entity.Entity,
-  body : @entity.Entity,
-  turret : @entity.Entity,
-  barrel : @entity.Entity,
-  position : @math.Vec3,
-  body_yaw : Double,
-  turret_yaw : Double,
-  body_material : @render3d.MaterialHandle,
-  turret_material : @render3d.MaterialHandle,
-) -> Unit {
-  let body_rotation = yaw_rotation(body_yaw)
-  let turret_rotation = yaw_rotation(turret_yaw)
-  let track_y = @math.Vec3::Vec3(0.0, 0.32, 0.0)
-  let body_y = @math.Vec3::Vec3(0.0, 0.72, 0.0)
-  let turret_y = @math.Vec3::Vec3(0.0, 1.15, 0.0)
-  set_mesh_entity(
-    left_track,
-    tank_track_mesh.val.unwrap(),
-    track_material.val.unwrap(),
-    position +
-    offset_from_yaw(body_yaw, @math.Vec3::Vec3(-0.74, 0.0, 0.0)) +
-    track_y,
-    rotation=body_rotation,
-  )
-  set_mesh_entity(
-    right_track,
-    tank_track_mesh.val.unwrap(),
-    track_material.val.unwrap(),
-    position +
-    offset_from_yaw(body_yaw, @math.Vec3::Vec3(0.74, 0.0, 0.0)) +
-    track_y,
-    rotation=body_rotation,
-  )
-  set_mesh_entity(
-    body,
-    tank_body_mesh.val.unwrap(),
-    body_material,
-    position + body_y,
-    rotation=body_rotation,
-  )
-  set_mesh_entity(
-    turret,
-    tank_turret_mesh.val.unwrap(),
-    turret_material,
-    position + turret_y,
-    rotation=turret_rotation,
-  )
-  set_mesh_entity(
-    barrel,
-    tank_barrel_mesh.val.unwrap(),
-    turret_material,
-    position +
-    offset_from_yaw(turret_yaw, @math.Vec3::Vec3(0.0, 0.0, -0.82)) +
-    @math.Vec3::Vec3(0.0, 1.16, 0.0),
-    rotation=turret_rotation,
   )
 }
 
@@ -347,32 +469,17 @@ fn sync_projectile_render() -> Unit {
 }
 
 ///|
-fn set_enemy_visibility(enemy : EnemyState, visible : Bool) -> Unit {
-  set_entity_visibility(enemy.left_track_entity, visible)
-  set_entity_visibility(enemy.right_track_entity, visible)
-  set_entity_visibility(enemy.body_entity, visible)
-  set_entity_visibility(enemy.turret_entity, visible)
-  set_entity_visibility(enemy.barrel_entity, visible)
-}
-
-///|
 fn sync_enemy_render() -> Unit {
   for enemy in enemy_states {
     if enemy.active {
-      sync_tank_parts(
-        enemy.left_track_entity,
-        enemy.right_track_entity,
-        enemy.body_entity,
-        enemy.turret_entity,
-        enemy.barrel_entity,
+      sync_tank_rig_transform(
+        enemy.rig,
         enemy.position,
         enemy.yaw,
         enemy.turret_yaw,
-        enemy_material.val.unwrap(),
-        enemy_turret_material.val.unwrap(),
       )
     } else {
-      set_enemy_visibility(enemy, false)
+      set_tank_rig_visibility(enemy.rig, false)
     }
   }
 }

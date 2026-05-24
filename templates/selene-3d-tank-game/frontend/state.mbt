@@ -101,12 +101,26 @@ priv struct ProjectileState {
 }
 
 ///|
-priv struct EnemyState {
+priv struct TankRenderRig {
+  root_entity : @entity.Entity
   left_track_entity : @entity.Entity
   right_track_entity : @entity.Entity
   body_entity : @entity.Entity
+  deck_entity : @entity.Entity
+  front_armor_entity : @entity.Entity
+  rear_armor_entity : @entity.Entity
+  turret_root_entity : @entity.Entity
   turret_entity : @entity.Entity
   barrel_entity : @entity.Entity
+  hatch_entity : @entity.Entity
+  muzzle_entity : @entity.Entity
+  left_wheel_entities : Array[@entity.Entity]
+  right_wheel_entities : Array[@entity.Entity]
+}
+
+///|
+priv struct EnemyState {
+  rig : TankRenderRig
   mut position : @math.Vec3
   mut yaw : Double
   mut turret_yaw : Double
@@ -152,19 +166,7 @@ let camera_entity : @entity.Entity = @entity.Entity::Entity()
 let light_entity : @entity.Entity = @entity.Entity::Entity()
 
 ///|
-let tank_body_entity : @entity.Entity = @entity.Entity::Entity()
-
-///|
-let tank_left_track_entity : @entity.Entity = @entity.Entity::Entity()
-
-///|
-let tank_right_track_entity : @entity.Entity = @entity.Entity::Entity()
-
-///|
-let tank_turret_entity : @entity.Entity = @entity.Entity::Entity()
-
-///|
-let tank_barrel_entity : @entity.Entity = @entity.Entity::Entity()
+let player_tank_rig : Ref[TankRenderRig?] = { val: None }
 
 ///|
 let hud_entity : @entity.Entity = @entity.Entity::Entity()
@@ -192,6 +194,21 @@ let tank_turret_mesh : Ref[@render3d.MeshHandle?] = { val: None }
 
 ///|
 let tank_barrel_mesh : Ref[@render3d.MeshHandle?] = { val: None }
+
+///|
+let tank_deck_mesh : Ref[@render3d.MeshHandle?] = { val: None }
+
+///|
+let tank_armor_mesh : Ref[@render3d.MeshHandle?] = { val: None }
+
+///|
+let tank_hatch_mesh : Ref[@render3d.MeshHandle?] = { val: None }
+
+///|
+let tank_muzzle_mesh : Ref[@render3d.MeshHandle?] = { val: None }
+
+///|
+let tank_wheel_mesh : Ref[@render3d.MeshHandle?] = { val: None }
 
 ///|
 let projectile_mesh : Ref[@render3d.MeshHandle?] = { val: None }

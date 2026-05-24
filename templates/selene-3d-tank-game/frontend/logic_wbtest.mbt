@@ -51,11 +51,7 @@ fn reset_scene_for_test() -> Unit {
   for spec in enemy_specs() {
     let (position, yaw) = spec
     enemy_states.push({
-      left_track_entity: @entity.Entity::Entity(),
-      right_track_entity: @entity.Entity::Entity(),
-      body_entity: @entity.Entity::Entity(),
-      turret_entity: @entity.Entity::Entity(),
-      barrel_entity: @entity.Entity::Entity(),
+      rig: spawn_tank_render_rig(),
       position,
       yaw,
       turret_yaw: yaw,
@@ -73,6 +69,13 @@ test "positive mouse movement turns view to the right" {
   let yaw = mouse_turn_yaw(0.0, 10.0)
   assert_true(yaw < 0.0)
   assert_true(forward_from_yaw(yaw).x > 0.0)
+}
+
+///|
+test "turret local yaw is relative to tank body yaw" {
+  let body_yaw = 0.75
+  let turret_yaw = 1.2
+  assert_true((turret_local_yaw(body_yaw, turret_yaw) - 0.45).abs() < 0.000001)
 }
 
 ///|

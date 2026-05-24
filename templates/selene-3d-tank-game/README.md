@@ -2,7 +2,7 @@
 
 A minimal 3D MoonBit game template for MoonCraft agents.
 
-The frontend is a Selene WebGPU game built for the JavaScript target. It renders a 1920x1080 perspective 3D arena with walls, cover blocks, a player tank, moving enemy tanks, enemy turret tracking, projectile hits, and tank/obstacle collision. The backend is a small native `async/http` server that serves the generated game bundle and static shell.
+The frontend is a Selene WebGPU game built for the JavaScript target. It renders a 1920x1080 perspective 3D arena with walls, cover blocks, a player tank, moving enemy tanks, enemy turret tracking, projectile hits, and tank/obstacle collision. Tanks use a parent-child render rig so body, tracks, wheels, armor, turret, hatch, barrel, and muzzle pieces inherit root transforms. The backend is a small native `async/http` server that serves the generated game bundle and static shell.
 
 ## Preview
 

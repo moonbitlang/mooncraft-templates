@@ -24,11 +24,6 @@ fn yaw_to(from : @math.Vec3, to : @math.Vec3) -> Double {
 }
 
 ///|
-fn offset_from_yaw(yaw : Double, offset : @math.Vec3) -> @math.Vec3 {
-  yaw_rotation(yaw).rotate_vec3(offset)
-}
-
-///|
 fn mouse_turn_yaw(yaw : Double, movement_x : Double) -> Double {
   yaw - movement_x * MOUSE_TURN_SENSITIVITY
 }
@@ -55,6 +50,11 @@ fn turn_toward(current : Double, target : Double, max_delta : Double) -> Double 
   } else {
     current - max_delta
   }
+}
+
+///|
+fn turret_local_yaw(body_yaw : Double, turret_yaw : Double) -> Double {
+  normalize_angle(turret_yaw - body_yaw)
 }
 
 ///|
