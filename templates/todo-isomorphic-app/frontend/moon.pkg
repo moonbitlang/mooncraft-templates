@@ -2,7 +2,7 @@ import {
   "moonbit-community/rabbita",
   "moonbit-community/rabbita/html",
   "moonbit-community/rabbita/http",
-  "mooncraft/todo_isomorphic_app/shared" @shared,
+  "mooncraft/todo_isomorphic_app/shared",
 }
 
 supported_targets = "js"

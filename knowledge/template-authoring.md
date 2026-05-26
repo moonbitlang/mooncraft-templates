@@ -6,6 +6,6 @@
   output directories.
 - Keep each preview script boring and inspectable.
 - Validate a template from its own root before adding it to `catalog.json`.
-- Keep `catalog.json` and `templates/*/moon.mod.json` in one-to-one sync.
+- Keep `catalog.json` and template MoonBit module files in one-to-one sync.
 - Keep catalog entries as indexes only: `id`, `name`, `path`, `description`,
   `category`, and `keywords`.

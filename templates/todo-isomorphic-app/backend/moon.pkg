@@ -1,5 +1,5 @@
 import {
-  "mooncraft/todo_isomorphic_app/shared" @shared,
+  "mooncraft/todo_isomorphic_app/shared",
   "moonbitlang/async",
   "moonbitlang/async/fs",
   "moonbitlang/core/env",

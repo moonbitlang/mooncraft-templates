@@ -1,0 +1,21 @@
+name = "mooncraft/interactive_presentation_app"
+
+version = "0.1.0"
+
+import {
+  "moonbitlang/async@0.18.1",
+  "oboard/mocket@0.7.3",
+  "moonbit-community/rabbita@0.12.2",
+}
+
+readme = "README.md"
+
+repository = ""
+
+license = "Apache-2.0"
+
+keywords = [ "mooncraft", "isomorphic", "presentation", "template" ]
+
+description = "Interactive presentation template with shared MoonBit deck types."
+
+preferred_target = "native"

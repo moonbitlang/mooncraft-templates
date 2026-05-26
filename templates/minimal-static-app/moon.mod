@@ -1,0 +1,19 @@
+name = "mooncraft/minimal_static_app"
+
+version = "0.1.0"
+
+import {
+  "moonbitlang/async@0.18.1",
+}
+
+readme = "README.md"
+
+repository = ""
+
+license = "Apache-2.0"
+
+keywords = [ "mooncraft", "template" ]
+
+description = "Minimal static MoonCraft app template."
+
+preferred_target = "native"

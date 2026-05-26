@@ -1,0 +1,21 @@
+name = "mooncraft/selene_3d_tank_game"
+
+version = "0.1.0"
+
+import {
+  "moonbitlang/async@0.18.1",
+  "Milky2018/selene@0.34.0",
+  "Milky2018/selene_webgpu@0.34.0",
+}
+
+readme = "README.md"
+
+repository = ""
+
+license = "Apache-2.0"
+
+keywords = [ "mooncraft", "selene", "webgpu", "game" ]
+
+description = "Selene WebGPU 3D tank game template for MoonCraft."
+
+preferred_target = "native"

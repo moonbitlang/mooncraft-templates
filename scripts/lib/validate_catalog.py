@@ -60,6 +60,43 @@ def file_contains(path, text):
     return path.is_file() and text in path.read_text(encoding="utf-8")
 
 
+def load_moon_mod_deps(template_id, template_dir):
+    moon_mod_path = template_dir / "moon.mod"
+    moon_mod_json_path = template_dir / "moon.mod.json"
+    if moon_mod_path.is_file():
+        text = moon_mod_path.read_text(encoding="utf-8")
+        match = re.search(r"""(?ms)^import\s*\{(?P<body>.*?)^\}""", text)
+        if match is None:
+            imports = []
+        else:
+            imports = re.findall(r'"([^"]+)"', match.group("body"))
+        require(
+            isinstance(imports, list),
+            f"{template_id} moon.mod import must be an array",
+        )
+        deps = {}
+        for item in imports:
+            require(
+                isinstance(item, str) and item,
+                f"{template_id} moon.mod import entries must be strings",
+            )
+            dep_name = item.split("@", 1)[0]
+            deps[dep_name] = item
+        return deps
+
+    require(
+        moon_mod_json_path.is_file(),
+        f"{template_id} requires moon.mod or moon.mod.json",
+    )
+    moon_mod = json.loads(moon_mod_json_path.read_text(encoding="utf-8"))
+    deps = moon_mod.get("deps", {})
+    require(
+        isinstance(deps, dict),
+        f"{template_id} moon.mod.json deps must be an object",
+    )
+    return deps
+
+
 def validate_template(root, template):
     require(
         set(template.keys()) == REQUIRED_KEYS,
@@ -144,8 +181,7 @@ def validate_architecture(root, template_id, template_dir):
     elif shape == "frontend/shared/backend":
         require(has_shared, f"{template_id} frontend/shared/backend template requires shared/")
 
-    moon_mod = json.loads((template_dir / "moon.mod.json").read_text(encoding="utf-8"))
-    deps = moon_mod.get("deps", {})
+    deps = load_moon_mod_deps(template_id, template_dir)
     frontend = validate_frontend(template_id, template_dir, deps)
     backend = validate_backend(template_id, template_dir, deps)
     return {"shape": shape, "frontend": frontend, "backend": backend}
@@ -170,7 +206,7 @@ def validate_frontend(template_id, template_dir, deps):
     elif "Milky2018/selene_webgpu" in deps:
         framework = "selene-webgpu"
     else:
-        raise SystemExit(f"{template_id} frontend framework cannot be inferred from moon.mod.json deps")
+        raise SystemExit(f"{template_id} frontend framework cannot be inferred from moon.mod deps")
 
     require(
         framework in VALID_FRONTEND_FRAMEWORKS,
@@ -269,7 +305,7 @@ def validate_catalog(root):
     actual_set = {
         str(path.relative_to(root))
         for path in templates_root.iterdir()
-        if path.is_dir() and (path / "moon.mod.json").is_file()
+        if path.is_dir() and ((path / "moon.mod").is_file() or (path / "moon.mod.json").is_file())
     }
     catalog_set = {str(path) for path in seen_paths}
     missing = sorted(catalog_set - actual_set)

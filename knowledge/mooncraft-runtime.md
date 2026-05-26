@@ -1,7 +1,7 @@
 # MoonCraft Runtime Contract
 
 - A generated app workspace is a normal MoonBit project at its root.
-- The root `moon.mod.json` should set `preferred-target` for the app.
+- The root `moon.mod` should set `preferred-target` for the app.
 - Plain `moon fmt`, `moon check`, `moon build`, and `moon test` must pass from
   the project root.
 - The root must include executable `mooncraft-preview.sh`.

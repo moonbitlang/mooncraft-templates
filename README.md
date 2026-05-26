@@ -10,7 +10,7 @@ similar app shape.
 ## Rules
 
 - Templates are read-only examples, not automatic project seeds.
-- Every template is a real MoonBit project with its own `moon.mod.json`.
+- Every template is a real MoonBit project with its own `moon.mod`.
 - Every template must pass `moon fmt --check`, `moon check`, `moon build`, and
   relevant `moon test` runs from the template root.
 - Every template root must include executable `mooncraft-preview.sh`.
