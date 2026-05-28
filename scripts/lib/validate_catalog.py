@@ -123,6 +123,7 @@ def validate_template(root, template):
     path = validate_path(template_id, template["path"])
     template_dir = root / path
     validate_relative_client_paths(template_id, template_dir)
+    validate_preview_script(template_id, template_dir)
     architecture = validate_architecture(root, template_id, template_dir)
     artifacts = expected_artifacts(template_dir, architecture)
     smoke_paths = expected_smoke_paths(artifacts)
@@ -150,6 +151,26 @@ def validate_relative_client_paths(template_id, template_dir):
                 FRONTEND_ABSOLUTE_API_PATTERN.search(text) is None,
                 f"{template_id} frontend fetch API paths must be relative: {path}",
             )
+
+
+def validate_preview_script(template_id, template_dir):
+    script_path = template_dir / "mooncraft-preview.sh"
+    require(script_path.is_file(), f"{template_id} requires mooncraft-preview.sh")
+    text = script_path.read_text(encoding="utf-8")
+    if "preview-dist" not in text or "moon run --target native backend" not in text:
+        return
+    require(
+        'dist_dir="$(pwd)/preview-dist"' in text,
+        f"{template_id} preview script must resolve preview-dist to an absolute path",
+    )
+    require(
+        re.search(r"--\s+preview-dist(?:\s|$)", text) is None,
+        f"{template_id} preview script must not pass relative preview-dist to backend",
+    )
+    require(
+        '-- "$dist_dir" "$port"' in text,
+        f"{template_id} preview script must pass absolute dist_dir to backend",
+    )
 
 
 def validate_path(template_id, raw_path):

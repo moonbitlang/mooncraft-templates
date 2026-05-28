@@ -11,11 +11,12 @@ case "$port" in
 esac
 
 cd "$(dirname "$0")"
-rm -rf preview-dist
-mkdir -p preview-dist
+dist_dir="$(pwd)/preview-dist"
+rm -rf "$dist_dir"
+mkdir -p "$dist_dir"
 
 moon build --target wasm frontend
-cp _build/wasm/debug/build/frontend/frontend.wasm preview-dist/frontend.wasm
-cp public/index.html preview-dist/index.html
+cp _build/wasm/debug/build/frontend/frontend.wasm "$dist_dir/frontend.wasm"
+cp public/index.html "$dist_dir/index.html"
 
-exec moon run --target native backend -- preview-dist "$port"
+exec moon run --target native backend -- "$dist_dir" "$port"
