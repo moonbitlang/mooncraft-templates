@@ -40,6 +40,8 @@ similar app shape.
   with interactive slides and backend-fed metrics.
 - `wasm-mandelbrot-app`: `frontend/backend` app with Wasm frontend compute.
 - `selene-minesweeper-game`: Selene WebGPU game with `frontend/backend` only.
+- `selene-3d-tank-game`: Selene WebGPU 3D tank game with `frontend/backend`
+  only.
 
 Run all checks:
 
