@@ -68,7 +68,7 @@ extern "js" fn take_host_web_key(code : String) -> Bool =
   #| }
 
 ///|
-extern "js" fn take_host_web_text_queue() -> Array[Int] =
+extern "js" fn take_host_web_text_queue() -> FixedArray[Int] =
   #| () => {
   #|   const state = globalThis.__gamepartyHostInput;
   #|   if (!state) {
@@ -103,7 +103,7 @@ pub fn is_key_pressed(key : String) -> Bool {
 ///|
 pub fn drain_text_input_codepoints() -> Array[Int] {
   ensure_host_web_input()
-  take_host_web_text_queue()
+  Array::from_fixed_array(take_host_web_text_queue())
 }
 
 ///|
